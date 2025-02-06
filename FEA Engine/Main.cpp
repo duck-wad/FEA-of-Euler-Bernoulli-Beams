@@ -1,7 +1,9 @@
 #include <iostream>
 
+#include "Mesh.h"
+
 int main() {
-	std::cout << "Hello world" << std::endl;
+	Mesh("INPUT.txt");
 
 	return 0;
 }
