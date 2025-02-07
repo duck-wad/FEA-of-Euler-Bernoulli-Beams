@@ -36,6 +36,7 @@ public:
 	Mesh();
 
 	void ReadFile(std::string fileName);
+	void Discretize();
 
 protected:
 	double E;

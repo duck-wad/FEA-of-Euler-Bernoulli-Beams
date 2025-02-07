@@ -88,3 +88,8 @@ void Mesh::ReadFile(std::string fileName) {
 		else throw std::invalid_argument("Not a valid load condition");
 	}
 }
+
+//builds the elemental stiffness matrices
+void Mesh::Discretize() {
+
+}
