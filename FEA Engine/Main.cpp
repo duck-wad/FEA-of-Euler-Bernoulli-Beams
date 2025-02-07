@@ -3,7 +3,7 @@
 #include "Mesh.h"
 
 int main() {
-	Mesh("INPUT.txt");
+	Mesh();
 
 	return 0;
 }

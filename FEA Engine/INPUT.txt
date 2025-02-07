@@ -1,4 +1,4 @@
-[BEAM_PARAMETERS]
+[MATERIALS]
 E: 200000000 I: 0.0001
 
 [NODES]
@@ -16,10 +16,11 @@ elem3 start: 3 end: 4
 
 [BOUNDARY_CONDITIONS]
 numbcs: 2
-bc1 type: roller location: 1
-bc2 type: pin location: 4
+bc1 type: pin location: 1
+bc2 type: clamp location: 4
 
 [LOADS]
-numloads: 2
-load1 type: point location: 2 magnitude: -5.0
+numloads: 3
+load1 type: force location: 2 magnitude: -5.0
 load2 type: distributed start: 2 end: 3 magnitude: -1.0
+load3 type: moment location: 4 magnitude: -2.0
