@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <cassert>
+#include <cmath>
 
 /* DEBUGGING FUNCTIONS */
 
@@ -80,7 +81,7 @@ void printVector(const std::vector<T>& vector) {
 
 /* END OF DEBUGGING FUNCTIONS */
 
-/* ALGEBRAIC MATRIX OPERATOR OVERLOADS */
+/* MATRIX OPERATIONS */
 
 template<typename T>
 std::vector<std::vector<T>> operator*(const std::vector<std::vector<T>>& mat1, const std::vector<std::vector<T>>& mat2) {
@@ -176,6 +177,14 @@ std::vector<std::vector<T>>& operator*= (std::vector<std::vector<T>>& matrix, T 
 		}
 	}
 	return matrix;
+}
+
+template<typename T>
+std::vector<T>& operator*= (std::vector<T>& vec, T scalar) {
+	for (T& elem : vec) {
+		elem *= scalar;
+	}
+	return vec;
 }
 
 template<typename T>
@@ -366,3 +375,6 @@ std::vector<std::vector<T>> outerProduct(const std::vector<T>& vec1, const std::
 
 	return matrix;
 }
+
+/* END OF MATRIX OPERATIONS */
+

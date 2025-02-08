@@ -3,6 +3,9 @@
 #include <iostream>
 #include <vector>
 
+const std::vector<double> gausspoint2 = { -0.5773502692, 0.5773502692 };
+const std::vector<double> gaussweight2 = { 1, 1 };
+
 //store the BCs in a list of structs
 enum class BCType {PIN, ROLLER, CLAMP};
 struct BC {
@@ -22,7 +25,8 @@ struct Load {
 
 class Element {
 public:
-	Element();
+	Element(double L, double E, double I);
+	void ConstructForce();
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;

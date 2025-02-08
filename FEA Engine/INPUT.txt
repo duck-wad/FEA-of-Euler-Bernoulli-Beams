@@ -1,12 +1,12 @@
 [MATERIALS]
-E: 200000000 I: 0.0001
+E: 200000000 I: 0.00012
 
 [NODES]
 numnodes: 4
 node1 coord: 0.0 
-node2 coord: 1.0 
-node3 coord: 2.0 
-node4 coord: 3.0 
+node2 coord: 3.0 
+node3 coord: 6.0 
+node4 coord: 9.0 
 
 [ELEMENTS]
 numelems: 3

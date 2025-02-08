@@ -9,7 +9,7 @@ std::vector<double> GaussSeidel(const std::vector<std::vector<double>>& A, const
 	std::vector<double> x(A.size(), 0.0);
 	int numIter = 0;
 
-	for (size_t iter = 0; iter < maxIter; iter++) {
+	for (int iter = 0; iter < maxIter; iter++) {
 		numIter = iter + 1;
 		//store results from previous iteration
 		std::vector<double> x_old = x;
