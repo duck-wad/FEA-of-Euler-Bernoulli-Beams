@@ -11,7 +11,8 @@
 template<typename T>
 void writeVectorToCSV(const std::vector<T>& vector, const std::string& filename) {
 
-	std::ofstream file(filename);
+	// Open the file in append mode
+	std::ofstream file("debug/" + filename);
 
 	if (!file.is_open()) {
 		throw std::ios_base::failure("Failed to open file for writing.");
@@ -31,7 +32,7 @@ void writeMatrixToCSV(const std::vector<std::vector<T>>& matrix, const std::stri
 
 	// Open the file stream
 
-	std::ofstream file(filename);
+	std::ofstream file("debug/" + filename);
 
 	if (!file.is_open()) {
 		throw std::ios_base::failure("Failed to open file for writing.");

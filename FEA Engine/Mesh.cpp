@@ -27,8 +27,6 @@ Element::Element(double L, double E, double I) {
 	}
 
 	elementStiffness *= (E * I * Jacobian);
-
-	//printMatrix(elementStiffness);
 }
 
 void Element::ConstructForce() {
@@ -39,6 +37,7 @@ Mesh::Mesh() {
 	ReadFile("INPUT.txt");
 
 	Discretize();
+	Assemble();
 }
 
 void Mesh::ReadFile(std::string fileName) {
@@ -136,3 +135,24 @@ void Mesh::Discretize() {
 
 }
 
+void Mesh::Assemble() {
+	globalStiffness.resize(2 * maxnode, std::vector<double>(2 * maxnode));
+	for (size_t i = 0; i < numelem; i++) {
+		int node1 = connectivity[i][0];
+		int node2 = connectivity[i][1];
+
+		std::vector<std::vector<double>> ke = elements[i].GetStiffness();
+
+		std::vector<int> globalDOFs = {
+			2 * (node1-1), 2 * (node1-1) + 1,
+			2 * (node2-1), 2 * (node2-1) + 1
+		};
+
+		for (size_t j = 0; j < 4; j++) {
+			for (size_t k = 0; k < 4; k++) {
+				globalStiffness[globalDOFs[j]][globalDOFs[k]] += ke[j][k];
+			}
+		}
+	}
+	writeMatrixToCSV(globalStiffness, "GLOBAL_STIFFNESS.csv");
+}

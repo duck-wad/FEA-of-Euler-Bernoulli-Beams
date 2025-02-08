@@ -27,6 +27,7 @@ class Element {
 public:
 	Element(double L, double E, double I);
 	void ConstructForce();
+	std::vector<std::vector<double>> GetStiffness() { return elementStiffness;  }
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;
@@ -41,6 +42,7 @@ public:
 
 	void ReadFile(std::string fileName);
 	void Discretize();
+	void Assemble();
 
 protected:
 	double E;
