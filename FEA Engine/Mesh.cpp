@@ -4,7 +4,9 @@
 #include "Utils.h"
 
 //constructor makes the element stiffness matrix using 2-point gauss quadrature
-Element::Element(double L, double E, double I) {
+Element::Element(double L, double E, double I){
+
+	Length = L;
 	
 	elementStiffness.resize(4, std::vector<double>(4));
 	elementForce.resize(4);
@@ -29,8 +31,15 @@ Element::Element(double L, double E, double I) {
 	elementStiffness *= (E * I * Jacobian);
 }
 
-void Element::ConstructForce() {
-	std::cout << "no";
+void Element::ConstructForce(double w1, double w2) {
+	double temp1 = w1 * Length / 60.0;
+	double temp2 = w2 * Length / 60.0;
+
+	std::vector<double> vec1 = { 21.0, 3.0 * Length, 9.0, -2.0 * Length };
+	std::vector<double> vec2 = { 9.0, 2.0 * Length, 21.0, -3.0 * Length };
+	elementForce = vec1 * temp1 + vec2 * temp2;
+
+	printVector(elementForce);
 }
 
 Mesh::Mesh() {
@@ -97,10 +106,10 @@ void Mesh::ReadFile(std::string fileName) {
 	for (size_t i = 0; i < numloads; i++) {
 		infile >> junk >> junk >> tempstring >> junk >> loads[i].startNode >> junk;
 		if (junk == "end:") {
-			infile >> loads[i].endNode >> junk >> loads[i].magnitude;
+			infile >> loads[i].endNode >> junk >> loads[i].startMagnitude >> junk >> loads[i].endMagnitude;
 		}
 		else if (junk == "magnitude:") {
-			infile >> loads[i].magnitude;
+			infile >> loads[i].startMagnitude;
 		}
 
 		if (tempstring == "force") {
@@ -131,7 +140,26 @@ void Mesh::Discretize() {
 		elements.emplace_back(Element(length, E, I));
 	}
 
-	//do something with the force vectors
+	//loop through force list. only apply the distributed loads to elemental force. apply point loads to global force
+	//check if the startNode and endNode match with any element in connectivity list
+	//if yes pass in start and end magnitude
+	for (const auto& load : loads) {
+		if (load.type == LoadType::DISTRIBUTED) {
+			for (size_t i = 0; i < connectivity.size(); i++) {
+				int eStart = connectivity[i][0];
+				int eEnd = connectivity[i][1];
+
+				if (eStart == load.startNode && eEnd == load.endNode) {
+					elements[i].ConstructForce(load.startMagnitude, load.endMagnitude);
+					break;
+				}
+				else if (eStart == load.endNode && eEnd == load.startNode) {
+					elements[i].ConstructForce(load.endMagnitude, load.startMagnitude);
+					break;
+				}
+			}
+		}
+	}
 
 }
 
@@ -154,5 +182,7 @@ void Mesh::Assemble() {
 			}
 		}
 	}
-	writeMatrixToCSV(globalStiffness, "GLOBAL_STIFFNESS.csv");
+	
+	//assemble global force vector from just distributed loads
+
 }

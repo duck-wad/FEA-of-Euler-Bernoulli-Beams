@@ -20,19 +20,21 @@ struct Load {
 	//for point loads, only startNode is used
 	int startNode; 
 	int endNode;
-	double magnitude;
+	double startMagnitude;
+	double endMagnitude;
 };
 
 class Element {
 public:
 	Element(double L, double E, double I);
-	void ConstructForce();
+	void ConstructForce(double w1, double w2);
 	std::vector<std::vector<double>> GetStiffness() { return elementStiffness;  }
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;
 	//if distributed load is applied to an element it will go into the force vector
 	std::vector<double> elementForce;
+	double Length;
 };
 
 class Mesh
@@ -43,6 +45,8 @@ public:
 	void ReadFile(std::string fileName);
 	void Discretize();
 	void Assemble();
+	//apply the point loads directly to global force
+	void ApplyLoads();
 
 protected:
 	double E;
