@@ -39,6 +39,8 @@ void Element::ConstructForce(double w1, double w2) {
 	std::vector<double> vec2 = { 9.0, 2.0 * Length, 21.0, -3.0 * Length };
 	elementForce = vec1 * temp1 + vec2 * temp2;
 
+	hasLoad = true;
+
 	printVector(elementForce);
 }
 
@@ -103,25 +105,34 @@ void Mesh::ReadFile(std::string fileName) {
 	infile >> junk;
 	infile >> junk >> numloads;
 	loads.resize(numloads);
-	for (size_t i = 0; i < numloads; i++) {
-		infile >> junk >> junk >> tempstring >> junk >> loads[i].startNode >> junk;
-		if (junk == "end:") {
-			infile >> loads[i].endNode >> junk >> loads[i].startMagnitude >> junk >> loads[i].endMagnitude;
-		}
-		else if (junk == "magnitude:") {
-			infile >> loads[i].startMagnitude;
-		}
 
-		if (tempstring == "force") {
-			loads[i].type = LoadType::FORCE;
+	//temporary variables
+	int startNode;
+	int endNode;
+	double startMag;
+	double endMag;
+
+	for (size_t i = 0; i < numloads; i++) {
+
+		infile >> junk >> junk >> tempstring;
+
+		if (tempstring == "distributed") {
+			infile >> junk >> startNode >> junk >> endNode >> junk >> startMag >> junk >> endMag;
+
+			distributedLoads.emplace_back(Load{ LoadType::DISTRIBUTED, startNode, endNode, startMag, endMag });
 		}
-		else if (tempstring == "moment") {
-			loads[i].type = LoadType::MOMENT;
+		else if (tempstring == "force" || tempstring == "moment") {
+			infile >> junk >> startNode >> junk >> startMag;
+			if (tempstring == "force") {
+				pointLoads.emplace_back(Load{ LoadType::FORCE, startNode, -1, startMag, 0 });
+			}
+			else {
+				pointLoads.emplace_back(Load{ LoadType::MOMENT, startNode, -1, startMag, 0 });
+			}
 		}
-		else if (tempstring == "distributed") {
-			loads[i].type = LoadType::DISTRIBUTED;
+		else {
+			throw std::invalid_argument("Not a valid load type");
 		}
-		else throw std::invalid_argument("Not a valid load condition");
 	}
 }
 
@@ -140,29 +151,31 @@ void Mesh::Discretize() {
 		elements.emplace_back(Element(length, E, I));
 	}
 
-	//loop through force list. only apply the distributed loads to elemental force. apply point loads to global force
+	//loop through distributed force list. only apply the distributed loads to elemental force. apply point loads to global force
 	//check if the startNode and endNode match with any element in connectivity list
 	//if yes pass in start and end magnitude
-	for (const auto& load : loads) {
-		if (load.type == LoadType::DISTRIBUTED) {
-			for (size_t i = 0; i < connectivity.size(); i++) {
-				int eStart = connectivity[i][0];
-				int eEnd = connectivity[i][1];
+	for (const auto& load : distributedLoads) {
 
-				if (eStart == load.startNode && eEnd == load.endNode) {
-					elements[i].ConstructForce(load.startMagnitude, load.endMagnitude);
-					break;
-				}
-				else if (eStart == load.endNode && eEnd == load.startNode) {
-					elements[i].ConstructForce(load.endMagnitude, load.startMagnitude);
-					break;
-				}
+		for (size_t i = 0; i < connectivity.size(); i++) {
+			int eStart = connectivity[i][0];
+			int eEnd = connectivity[i][1];
+
+			if (eStart == load.startNode && eEnd == load.endNode) {
+				elements[i].ConstructForce(load.startMagnitude, load.endMagnitude);
+				break;
+			}
+			else if (eStart == load.endNode && eEnd == load.startNode) {
+				elements[i].ConstructForce(load.endMagnitude,load.startMagnitude);
+				break;
 			}
 		}
+		
 	}
 
 }
 
+//assembles the global stiffness matrix and force vector
+//point loads are applied directly to global force vector
 void Mesh::Assemble() {
 	globalStiffness.resize(2 * maxnode, std::vector<double>(2 * maxnode));
 	for (size_t i = 0; i < numelem; i++) {
@@ -184,5 +197,27 @@ void Mesh::Assemble() {
 	}
 	
 	//assemble global force vector from just distributed loads
+	globalForce.resize(2 * maxnode);
+	for (size_t i = 0; i < numelem; i++) {
+		if (elements[i].hasLoad == true) {
+			int globalDOF1 = 2*(connectivity[i][0] - 1);
+			int globalDOF2 = 2*(connectivity[i][1] - 1);
 
+			globalForce[globalDOF1] += (elements[i].GetForce())[0];
+			globalForce[globalDOF1 + 1] += (elements[i].GetForce())[1];
+			globalForce[globalDOF2] += (elements[i].GetForce())[2];
+			globalForce[globalDOF2 + 1] += (elements[i].GetForce())[3];
+		}
+	}
+
+	//now put point loads into the force vector
+	for (size_t i = 0; i < pointLoads.size(); i++) {
+		int globalDOF = 2*(pointLoads[i].startNode - 1);
+		if (pointLoads[i].type == LoadType::MOMENT) {
+			globalDOF += 1;
+		}
+		globalForce[globalDOF] += pointLoads[i].startMagnitude;
+	}
+
+	printVector(globalForce);
 }

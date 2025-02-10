@@ -20,7 +20,8 @@ bc1 type: pin location: 1
 bc2 type: clamp location: 4
 
 [LOADS]
-numloads: 3
+numloads: 4
 load1 type: force location: 2 magnitude: -5.0
-load2 type: distributed start: 2 end: 3 startmagnitude: -1.0 endmagnitude: -2.0
-load3 type: moment location: 4 magnitude: -2.0
+load2 type: moment location: 4 magnitude: -2.0
+load3 type: distributed start: 2 end: 3 startmagnitude: -1.0 endmagnitude: -2.0
+load4 type: distributed start: 3 end: 4 startmagnitude: -5.0 endmagnitude: -5.0

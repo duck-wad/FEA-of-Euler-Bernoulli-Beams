@@ -29,6 +29,9 @@ public:
 	Element(double L, double E, double I);
 	void ConstructForce(double w1, double w2);
 	std::vector<std::vector<double>> GetStiffness() { return elementStiffness;  }
+	std::vector<double> GetForce() { return elementForce; }
+
+	bool hasLoad = false;
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;
@@ -67,6 +70,9 @@ protected:
 	//vector of BCs and loads
 	std::vector<BC> boundaryConditions;
 	std::vector<Load> loads;
+
+	std::vector<Load> pointLoads;
+	std::vector<Load> distributedLoads;
 
 	//global stiffness and force
 	std::vector<std::vector<double>> globalStiffness;
