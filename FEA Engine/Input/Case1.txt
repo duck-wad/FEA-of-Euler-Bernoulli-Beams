@@ -1,0 +1,38 @@
+[MATERIALS]
+E: 200000000 I: 0.00012
+
+[NODES]
+numnodes: 9
+node1 coord: 0.0 
+node2 coord: 1.0 
+node3 coord: 2.0 
+node4 coord: 3.0
+node5 coord: 4.0
+node6 coord: 5.0
+node7 coord: 6.0
+node8 coord: 7.0
+node9 coord: 8.0
+
+
+[ELEMENTS]
+numelems: 8
+elem1 start: 1 end: 2
+elem2 start: 2 end: 3
+elem3 start: 3 end: 4
+elem3 start: 4 end: 5
+elem3 start: 5 end: 6
+elem3 start: 6 end: 7
+elem3 start: 7 end: 8
+elem3 start: 8 end: 9
+
+[BOUNDARY_CONDITIONS]
+numbcs: 3
+bc1 type: clamp location: 1
+bc2 type: roller location: 6
+bc3 type: pin location: 9
+
+[LOADS]
+numloads: 3
+load1 type: force location: 9 magnitude: -10000.0
+load2 type: moment location: 6 magnitude: -3000.0
+load3 type: distributed start: 1 end: 6 startmagnitude: 0.0 endmagnitude: -10000.0

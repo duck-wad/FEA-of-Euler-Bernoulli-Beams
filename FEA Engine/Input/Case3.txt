@@ -1,0 +1,30 @@
+[MATERIALS]
+E: 1 I: 1
+
+[NODES]
+numnodes: 5
+node1 coord: 0.0 
+node2 coord: 2.0
+node3 coord: 4.0
+node4 coord: 6.0
+node5 coord: 3.0
+
+[ELEMENTS]
+numelems: 4
+elem1 start: 1 end: 2
+elem2 start: 2 end: 5
+elem3 start: 5 end: 3
+elem4 start: 3 end: 4
+
+[BOUNDARY_CONDITIONS]
+numbcs: 3
+bc1 type: clamp location: 1
+bc2 type: roller location: 2
+bc3 type: roller location: 3
+
+[LOADS]
+numloads: 4
+load1 type: distributed start: 1 end: 2 startmagnitude: -5000.0 endmagnitude: -5000.0
+load2 type: force location: 5 magnitude: -10000.0
+load3 type: force location: 4 magnitude: -20000.0
+load4 type: moment location: 4 magnitude: 2000.0

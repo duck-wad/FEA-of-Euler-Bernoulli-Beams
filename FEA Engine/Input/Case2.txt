@@ -1,0 +1,32 @@
+[MATERIALS]
+E: 200000000 I: 0.00012
+
+[NODES]
+numnodes: 6
+node1 coord: 0.0 
+node2 coord: 1.0 
+node3 coord: 2.0 
+node4 coord: 3.0
+node5 coord: 4.0
+node6 coord: 5.0
+
+[ELEMENTS]
+numelems: 5
+elem1 start: 1 end: 2
+elem2 start: 2 end: 3
+elem3 start: 3 end: 4
+elem4 start: 4 end: 5
+elem5 start: 5 end: 6
+
+[BOUNDARY_CONDITIONS]
+numbcs: 2
+bc1 type: pin location: 1
+bc2 type: roller location: 6
+
+[LOADS]
+numloads: 5
+load1 type: distributed start: 1 end: 2 startmagnitude: -10000.0 endmagnitude: -10000.0
+load2 type: distributed start: 2 end: 3 startmagnitude: -10000.0 endmagnitude: -10000.0
+load3 type: distributed start: 3 end: 4 startmagnitude: -10000.0 endmagnitude: -10000.0
+load4 type: distributed start: 4 end: 5 startmagnitude: -10000.0 endmagnitude: -10000.0
+load5 type: distributed start: 5 end: 6 startmagnitude: -10000.0 endmagnitude: -10000.0

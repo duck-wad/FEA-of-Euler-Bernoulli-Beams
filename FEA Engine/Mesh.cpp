@@ -2,6 +2,7 @@
 
 #include "Mesh.h"
 #include "Utils.h"
+#include "MatrixSolver.h"
 
 //constructor makes the element stiffness matrix using 2-point gauss quadrature
 Element::Element(double L, double E, double I){
@@ -40,15 +41,17 @@ void Element::ConstructForce(double w1, double w2) {
 	elementForce = vec1 * temp1 + vec2 * temp2;
 
 	hasLoad = true;
-
-	printVector(elementForce);
 }
 
-Mesh::Mesh() {
-	ReadFile("INPUT.txt");
+Mesh::Mesh(std::string infile) {
+	ReadFile(infile);
 
 	Discretize();
 	Assemble();
+	ApplyBCs();
+
+	displacements = GaussSeidel(globalStiffness, globalForce);
+	printVector(displacements);
 }
 
 void Mesh::ReadFile(std::string fileName) {
@@ -220,4 +223,38 @@ void Mesh::Assemble() {
 	}
 
 	printVector(globalForce);
+	writeMatrixToCSV(globalStiffness, "GLOBAL_STIFFNESS.csv");
+	writeVectorToCSV(globalForce, "GLOBAL_FORCE.csv");
+}
+
+//for each node that has a support, set the row in stiffness matrix to zero
+//except the diagonal which is set to 1
+//set the entry in force vector equal to zero
+//pin and roller have the vertical displacement set to zero
+//clamp has displacement zero and slope zero
+void Mesh::ApplyBCs() {
+	for (size_t i = 0; i < boundaryConditions.size(); i++) {
+		int globalDOF = 2 * (boundaryConditions[i].node - 1);
+		for (size_t i = 0; i < globalStiffness.size(); i++) {
+			if (i == globalDOF) {
+				globalStiffness[globalDOF][i] = 1.0;
+			}
+			else {
+				globalStiffness[globalDOF][i] = 0.0;
+			}
+		}
+		globalForce[globalDOF] = 0.0;
+
+		if (boundaryConditions[i].type == BCType::CLAMP) {
+			for (size_t i = 0; i < globalStiffness.size(); i++) {
+				if (i == (globalDOF + 1)) {
+					globalStiffness[globalDOF + 1][i] = 1.0;
+				}
+				else {
+					globalStiffness[globalDOF + 1][i] = 0.0;
+				}
+			}
+			globalForce[globalDOF + 1] = 0.0;
+		}
+	}
 }

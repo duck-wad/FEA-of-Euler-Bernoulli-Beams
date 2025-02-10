@@ -43,13 +43,12 @@ protected:
 class Mesh
 {
 public: 
-	Mesh();
+	Mesh(std::string infile);
 
 	void ReadFile(std::string fileName);
 	void Discretize();
 	void Assemble();
-	//apply the point loads directly to global force
-	void ApplyLoads();
+	void ApplyBCs();
 
 protected:
 	double E;
@@ -77,5 +76,9 @@ protected:
 	//global stiffness and force
 	std::vector<std::vector<double>> globalStiffness;
 	std::vector<double> globalForce;
+	//vector containing the resulting displacements/rotations
+	std::vector<double> displacements;
+	//vector with support reactions calculated in post-processing Kd - f
+	std::vector<double> reactions;
 };
 
