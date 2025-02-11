@@ -50,8 +50,10 @@ Mesh::Mesh(std::string infile) {
 	Assemble();
 	ApplyBCs();
 
-	displacements = GaussSeidel(globalStiffness, globalForce);
+	displacements = GaussSeidel(globalStiffnessBC, globalForceBC);
 	printVector(displacements);
+
+	SolveReactions();
 }
 
 void Mesh::ReadFile(std::string fileName) {
@@ -233,28 +235,37 @@ void Mesh::Assemble() {
 //pin and roller have the vertical displacement set to zero
 //clamp has displacement zero and slope zero
 void Mesh::ApplyBCs() {
+
+	globalStiffnessBC = globalStiffness;
+	globalForceBC = globalForce;
+
 	for (size_t i = 0; i < boundaryConditions.size(); i++) {
 		int globalDOF = 2 * (boundaryConditions[i].node - 1);
-		for (size_t i = 0; i < globalStiffness.size(); i++) {
+		for (size_t i = 0; i < globalStiffnessBC.size(); i++) {
 			if (i == globalDOF) {
-				globalStiffness[globalDOF][i] = 1.0;
+				globalStiffnessBC[globalDOF][i] = 1.0;
 			}
 			else {
-				globalStiffness[globalDOF][i] = 0.0;
+				globalStiffnessBC[globalDOF][i] = 0.0;
 			}
 		}
-		globalForce[globalDOF] = 0.0;
+		globalForceBC[globalDOF] = 0.0;
 
 		if (boundaryConditions[i].type == BCType::CLAMP) {
-			for (size_t i = 0; i < globalStiffness.size(); i++) {
+			for (size_t i = 0; i < globalStiffnessBC.size(); i++) {
 				if (i == (globalDOF + 1)) {
-					globalStiffness[globalDOF + 1][i] = 1.0;
+					globalStiffnessBC[globalDOF + 1][i] = 1.0;
 				}
 				else {
-					globalStiffness[globalDOF + 1][i] = 0.0;
+					globalStiffnessBC[globalDOF + 1][i] = 0.0;
 				}
 			}
-			globalForce[globalDOF + 1] = 0.0;
+			globalForceBC[globalDOF + 1] = 0.0;
 		}
 	}
+}
+
+void Mesh::SolveReactions() {
+	reactions = globalStiffness * displacements - globalForce;
+	printVector(reactions);
 }

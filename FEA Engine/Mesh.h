@@ -49,6 +49,7 @@ public:
 	void Discretize();
 	void Assemble();
 	void ApplyBCs();
+	void SolveReactions();
 
 protected:
 	double E;
@@ -76,6 +77,10 @@ protected:
 	//global stiffness and force
 	std::vector<std::vector<double>> globalStiffness;
 	std::vector<double> globalForce;
+	//since reactions are computed in post-processing, only alter the below matrix and vector for boundary conditions
+	std::vector<std::vector<double>> globalStiffnessBC;
+	std::vector<double> globalForceBC;
+
 	//vector containing the resulting displacements/rotations
 	std::vector<double> displacements;
 	//vector with support reactions calculated in post-processing Kd - f
