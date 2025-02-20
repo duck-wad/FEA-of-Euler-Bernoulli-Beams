@@ -266,6 +266,20 @@ void Mesh::ApplyBCs() {
 }
 
 void Mesh::SolveReactions() {
-	reactions = globalStiffness * displacements - globalForce;
+	std::vector<double> tempReactions = globalStiffness * displacements - globalForce;
+
+	//depending on fineness of mesh, some non-support nodes may have non-zero reactions
+	//loop through the boundary conditions, set all non-support node reactions to zero
+	reactions.resize(tempReactions.size(), 0.0);
+
+	for (size_t i = 0; i < boundaryConditions.size(); i++) {
+		int globalDOF = 2 * (boundaryConditions[i].node - 1);
+		
+		reactions[globalDOF] = tempReactions[globalDOF];
+		
+		if (boundaryConditions[i].type == BCType::CLAMP) {
+			reactions[globalDOF+1] = tempReactions[globalDOF+1];
+		}
+	}
 	printVector(reactions);
 }
