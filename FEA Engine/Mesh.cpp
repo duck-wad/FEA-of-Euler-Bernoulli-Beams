@@ -5,9 +5,13 @@
 #include "MatrixSolver.h"
 
 //constructor makes the element stiffness matrix using 2-point gauss quadrature
-Element::Element(double L, double E, double I){
+Element::Element(double L, double E, double I, int start, int end){
 
 	Length = L;
+	startNode = start;
+	endNode = end;
+	elemE = E;
+	elemI = I;
 	
 	elementStiffness.resize(4, std::vector<double>(4));
 	elementForce.resize(4);
@@ -29,7 +33,7 @@ Element::Element(double L, double E, double I){
 		elementStiffness += (outerProduct(B[i], B[i]) * gaussweight2[i]);
 	}
 
-	elementStiffness *= (E * I * Jacobian);
+	elementStiffness *= (elemE * elemI * Jacobian);
 }
 
 void Element::ConstructForce(double w1, double w2) {
@@ -54,6 +58,8 @@ Mesh::Mesh(std::string infile) {
 	printVector(displacements);
 
 	SolveReactions();
+
+	CalculateMoment();
 }
 
 void Mesh::ReadFile(std::string fileName) {
@@ -153,7 +159,7 @@ void Mesh::Discretize() {
 		double startPos = globalCoordinates[connectivity[i][0] - 1];
 		double endPos = globalCoordinates[connectivity[i][1] - 1];
 		double length = abs(endPos - startPos);
-		elements.emplace_back(Element(length, E, I));
+		elements.emplace_back(Element(length, E, I, connectivity[i][0], connectivity[i][1]));
 	}
 
 	//loop through distributed force list. only apply the distributed loads to elemental force. apply point loads to global force
@@ -224,9 +230,9 @@ void Mesh::Assemble() {
 		globalForce[globalDOF] += pointLoads[i].startMagnitude;
 	}
 
-	printVector(globalForce);
-	writeMatrixToCSV(globalStiffness, "GLOBAL_STIFFNESS.csv");
-	writeVectorToCSV(globalForce, "GLOBAL_FORCE.csv");
+	//printVector(globalForce);
+	//writeMatrixToCSV(globalStiffness, "GLOBAL_STIFFNESS.csv");
+	//writeVectorToCSV(globalForce, "GLOBAL_FORCE.csv");
 }
 
 //for each node that has a support, set the row in stiffness matrix to zero
@@ -282,4 +288,47 @@ void Mesh::SolveReactions() {
 		}
 	}
 	printVector(reactions);
+}
+
+//moments are related to displacement by M=EI(d^2w/dx2)
+//displacement within element approx by w(x)=N1(x)w1+N2(x)theta1... (cubic polynomial)
+//take derivative of the shape functions wrt x
+void Mesh::CalculateMoment() {
+	
+	//each element contributes some moment to the global node moment
+	//keep track of how many elements contribute in momentCount then take average
+	//since continuity is not enforced for moment across elements this is required to have a smooth BMD
+	moments.resize(maxnode, 0.0);
+	std::vector<int> momentCount(maxnode, 0);
+
+	for (size_t i = 0; i < elements.size(); i++) {
+		int startNode = elements[i].GetStart();
+		int endNode = elements[i].GetEnd();
+		double L = elements[i].GetLength();
+		double EI = elements[i].GetE() * elements[i].GetI();
+
+		int globalDOF1 = 2 * (startNode - 1);
+		int globalDOF2 = 2 * (endNode - 1);
+
+		double w1 = displacements[globalDOF1];
+		double theta1 = displacements[globalDOF1 + 1];
+		double w2 = displacements[globalDOF2];
+		double theta2 = displacements[globalDOF2 + 1];
+
+		//moment at left node x=0, moment at right node x=L
+		moments[startNode-1] += EI * (-6.0 / (L * L) * w1 - 4.0 / L * theta1 + 6.0 / (L * L) * w2 - 2.0 / L * theta2);
+		moments[endNode-1] += EI * (6.0 / (L * L) * w1 + 2.0 / L * theta1 - 6.0 / (L * L) * w2 + 4.0 / L * theta2);
+
+		momentCount[startNode - 1]++;
+		momentCount[endNode - 1]++;
+	}
+
+	//now average each moment by the corresponding momentCount
+	for (size_t i = 0; i < maxnode; i++) {
+		if (momentCount[i] > 0) {
+			moments[i] /= momentCount[i];
+		}
+	}
+	printVector(moments);
+	printVector(momentCount);
 }

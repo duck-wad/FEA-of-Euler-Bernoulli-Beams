@@ -26,18 +26,30 @@ struct Load {
 
 class Element {
 public:
-	Element(double L, double E, double I);
+	Element(double L, double E, double I, int start, int end);
 	void ConstructForce(double w1, double w2);
-	std::vector<std::vector<double>> GetStiffness() { return elementStiffness;  }
+	std::vector<std::vector<double>> GetStiffness() { return elementStiffness; }
 	std::vector<double> GetForce() { return elementForce; }
 
 	bool hasLoad = false;
+
+	double GetLength() { return Length; }
+	int GetStart() { return startNode; }
+	int GetEnd() { return endNode; }
+	double GetE() { 
+		return elemE; 
+	}
+	double GetI() { return elemI; }
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;
 	//if distributed load is applied to an element it will go into the force vector
 	std::vector<double> elementForce;
 	double Length;
+	int startNode;
+	int endNode;
+	double elemE;
+	double elemI;
 };
 
 class Mesh
@@ -50,6 +62,10 @@ public:
 	void Assemble();
 	void ApplyBCs();
 	void SolveReactions();
+
+	//post-processing functions
+	void CalculateMoment();
+	void CalculateShear();
 
 protected:
 	double E;
@@ -85,5 +101,8 @@ protected:
 	std::vector<double> displacements;
 	//vector with support reactions calculated in post-processing Kd - f
 	std::vector<double> reactions;
+
+	std::vector<double> moments;
+	std::vector<double> shears;
 };
 
