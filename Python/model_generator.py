@@ -58,9 +58,6 @@ class Beam:
         if (endloc != None and endmag == None):
             print("Loads with an end location must have a specified end magnitude.")
             return
-        if (endloc != None and startloc > endloc):
-            print("End location must be greater than start location.")
-            return
         if (type == "distributed" and endloc==None):
             print("Distributed loads must have an end location.")
             return
@@ -97,7 +94,6 @@ class Beam:
         self.node_list = np.unique(np.append(self.node_list, discretized_list))
 
         self.discretize_distributed_loads()         
-        #print(self.node_list)
 
     # after discretizing the beam, any distributed loads applied to the beam must also be discretized
     def discretize_distributed_loads(self):
@@ -111,16 +107,26 @@ class Beam:
         # divide the change in load by the number of elements to get load change per element
         for load in distributed_loads:
             
-            # number of elements in the range is 1 less than the number of nodes
-            segment_nodes = self.node_list[(self.node_list >= load["startloc"]) & (self.node_list <= load["endloc"])]
+            start_node = load["startloc"]
+            end_node = load["endloc"]
+            start_mag = load["startmag"]
+            end_mag = load["endmag"]
+            if (load["startloc"] > load["endloc"]):
+                start_node = load["endloc"]
+                end_node = load["startloc"]
+                start_mag = load["endmag"]
+                end_mag = load["startmag"]
+
+            segment_nodes = self.node_list[(self.node_list >= start_node) & (self.node_list <= end_node)]
             print(segment_nodes)
 
+            # number of elements in the range is 1 less than the number of nodes
             numel = len(segment_nodes)-1
 
-            load_change = (load["endmag"] - load["startmag"]) / numel
+            load_change = (end_mag - start_mag) / numel
             print(load_change)
 
-            temp_startmag = load["startmag"]
+            temp_startmag = start_mag
             segment_loads = np.zeros(0, dtype=loadtype)
             for i in range(numel):
                 segment_loads = np.append(segment_loads, np.array([("distributed", segment_nodes[i], segment_nodes[i+1], temp_startmag, temp_startmag+load_change)], dtype=loadtype))
@@ -131,21 +137,5 @@ class Beam:
         self.loads = np.append(self.loads, discretized_loads)
         print(self.loads)
 
-
-beam = Beam(8.0, 200000000, 0.00012)
-beam.add_BC("clamp", 0.0)
-beam.add_BC("roller", 5.0)
-beam.add_BC("pin", 8.0)
-
-# [type, startloc, startmag, endloc, endmag]
-beam.add_load("distributed", 0.0, 0.0, 5.0, -5000.0)
-beam.add_load("distributed", 6.0, -6000, 8.0, -4000.0)
-beam.add_load("moment", 5.0, 3000.0)
-beam.add_load("force", 5.0, 100)
-
-# input an approximate element length
-beam.discretize(0.5)
-
-#beam.print_info()    
-
-#beam.create_infile()
+    def create_infile():
+        pass
