@@ -3,7 +3,7 @@
 #include "Mesh.h"
 
 int main() {
-	std::string infile = "Input/Case4.txt";
+	std::string infile = "Input/INPUT.txt";
 	Mesh Mesh(infile);
 
 	return 0;

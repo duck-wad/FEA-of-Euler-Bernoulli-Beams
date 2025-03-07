@@ -59,6 +59,9 @@ Mesh::Mesh(std::string infile) {
 
 	SolveReactions();
 
+	writeVectorToCSV(displacements, "./Output/DISPLACEMENTS.csv");
+	writeVectorToCSV(reactions, "./Output/REACTIONS.csv");
+
 	//CalculateMoment();
 }
 

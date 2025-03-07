@@ -1,5 +1,7 @@
 # Beam class
 import numpy as np
+import subprocess
+import os
 
 LOW_TOL = 1e-8
 BCtype = [("type", "U10"), ("location", "f8")]
@@ -118,13 +120,11 @@ class Beam:
                 end_mag = load["startmag"]
 
             segment_nodes = self.node_list[(self.node_list >= start_node) & (self.node_list <= end_node)]
-            print(segment_nodes)
 
             # number of elements in the range is 1 less than the number of nodes
             numel = len(segment_nodes)-1
 
             load_change = (end_mag - start_mag) / numel
-            print(load_change)
 
             temp_startmag = start_mag
             segment_loads = np.zeros(0, dtype=loadtype)
@@ -135,10 +135,9 @@ class Beam:
             discretized_loads = np.append(discretized_loads, segment_loads)
         
         self.loads = np.append(self.loads, discretized_loads)
-        print(self.loads)
 
-    def create_infile(self, filename):
-        f = open("../FEA Engine/Input/" + filename, "w")
+    def create_infile(self):
+        f = open("../FEA Engine/Input/INPUT.txt", "w")
         
         # write materials list
         f.write("[MATERIALS]" + "\n")
@@ -183,3 +182,25 @@ class Beam:
             else:
                 f.write("load" + str(i+1) + " type: " + str(self.loads[i]["type"]) + " location: " + str(startnode) + " magnitude: " + str(self.loads[i]["startmag"]) + "\n")
         f.close()
+
+    def run(self):
+        # user shouldn't have to rebuild the executable for every run
+        '''
+        build_result = subprocess.run(["bash", "../FEA Engine/build.sh"], cwd="../FEA Engine", capture_output=True, text=True, shell=True)
+
+        print("Build Output:\n", build_result.stdout)
+        if build_result.returncode != 0:
+            print("Build Failed:\n", build_result.stderr)
+            exit(1)
+        '''
+
+        cpp_executable = "../FEA Engine/program.exe"  
+
+        print("Running C++ program...")
+        try:
+            subprocess.run([cpp_executable], cwd="../FEA Engine", check=True)
+            print(f"C++ program completed.")
+        except FileNotFoundError:
+            print(f"Error: C++ executable '{cpp_executable}' not found.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error: C++ program failed with error code {e.returncode}.")
