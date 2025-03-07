@@ -1,8 +1,8 @@
 # FEA of Euler-Bernoulli Beams
 
-This repository contains simple code to create a beam with boundary conditions and loads, and analyze the displacements and reactions using the Finite Element Method for Euler-Bernoulli beams.
-This was made as a simple exercise to improve my coding skills and learn about the FEA process!
-Python scripts are used to generate a text input file which is read by a C++ program to perform the FEA. 
+- This repository contains simple code to create a beam with boundary conditions and loads, and analyze the displacements and reactions using the Finite Element Method for Euler-Bernoulli beams.
+- This was made as a simple exercise to improve my coding skills and learn about the FEA process!
+- Python scripts are used to generate a text input file which is read by a C++ program to perform the FEA. 
 
 ## Generating the Input
 1. In the run.py script, create a beam with a specified length and material parameters.
@@ -13,9 +13,9 @@ Python scripts are used to generate a text input file which is read by a C++ pro
 6. Run the "run" method to call the C++ executable.
 
 ## Performing FEA
-The C++ program reads the "INPUT.txt" file generated from the Python script. 
-The mesh is discretized according to the node and element input from the infile. Elemental stiffness matrices and force vectors are developed and assembled into the global stiffness matrix and global force vector.
-The system of equations is solved using Gaussian Elimination.
-Currently nodal displacements and reactions are output from the program. In the future, moment and shear will also be output.
+- The C++ program reads the "INPUT.txt" file generated from the Python script. 
+- The mesh is discretized according to the node and element input from the infile. Elemental stiffness matrices and force vectors are developed and assembled into the global stiffness matrix and global force vector.
+- The system of equations is solved using Gaussian Elimination.
+- Currently nodal displacements and reactions are output from the program. In the future, moment and shear will also be output.
 
 ## Displaying the Output
