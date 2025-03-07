@@ -54,12 +54,12 @@ Mesh::Mesh(std::string infile) {
 	Assemble();
 	ApplyBCs();
 
-	displacements = GaussSeidel(globalStiffnessBC, globalForceBC);
-	printVector(displacements);
+	//displacements = GaussSeidel(globalStiffnessBC, globalForceBC, 0.001, 5000);
+	displacements = GaussianElimination(globalStiffnessBC, globalForceBC);
 
 	SolveReactions();
 
-	CalculateMoment();
+	//CalculateMoment();
 }
 
 void Mesh::ReadFile(std::string fileName) {

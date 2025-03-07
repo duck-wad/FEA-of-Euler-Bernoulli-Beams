@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cmath>
 
+const double LOW_TOL = 1e-8;
+
 /* DEBUGGING FUNCTIONS */
 
 template<typename T>
@@ -375,6 +377,17 @@ std::vector<std::vector<T>> outerProduct(const std::vector<T>& vec1, const std::
 	}
 
 	return matrix;
+}
+
+template<typename T>
+bool isSingular(const std::vector<std::vector<T>>& matrix) {
+
+	for (size_t i = 0; i < matrix.size(); i++) {
+		if (std::abs(matrix[i][i]) < LOW_TOL) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /* END OF MATRIX OPERATIONS */

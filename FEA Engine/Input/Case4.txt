@@ -1,0 +1,61 @@
+[MATERIALS]
+E: 200000000 I: 0.00012
+ 
+[NODES]
+numnodes: 17
+node1 coord: 0.0
+node2 coord: 0.5
+node3 coord: 1.0
+node4 coord: 1.5
+node5 coord: 2.0
+node6 coord: 2.5
+node7 coord: 3.0
+node8 coord: 3.5
+node9 coord: 4.0
+node10 coord: 4.5
+node11 coord: 5.0
+node12 coord: 5.5
+node13 coord: 6.0
+node14 coord: 6.5
+node15 coord: 7.0
+node16 coord: 7.5
+node17 coord: 8.0
+
+[ELEMENTS]
+numelems: 16
+elem1 start: 1 end: 2
+elem2 start: 2 end: 3
+elem3 start: 3 end: 4
+elem4 start: 4 end: 5
+elem5 start: 5 end: 6
+elem6 start: 6 end: 7
+elem7 start: 7 end: 8
+elem8 start: 8 end: 9
+elem9 start: 9 end: 10
+elem10 start: 10 end: 11
+elem11 start: 11 end: 12
+elem12 start: 12 end: 13
+elem13 start: 13 end: 14
+elem14 start: 14 end: 15
+elem15 start: 15 end: 16
+elem16 start: 16 end: 17
+
+[BOUNDARY_CONDITIONS]
+numbcs: 3
+bc1 type: clamp location: 1
+bc2 type: roller location: 11
+bc3 type: pin location: 17
+
+[LOADS]
+numloads: 11
+load1 type: moment location: 11 magnitude: 3000.0
+load2 type: distributed start: 1 end: 2 startmagnitude: 0.0 endmagnitude: -500.0
+load3 type: distributed start: 2 end: 3 startmagnitude: -500.0 endmagnitude: -1000.0
+load4 type: distributed start: 3 end: 4 startmagnitude: -1000.0 endmagnitude: -1500.0
+load5 type: distributed start: 4 end: 5 startmagnitude: -1500.0 endmagnitude: -2000.0
+load6 type: distributed start: 5 end: 6 startmagnitude: -2000.0 endmagnitude: -2500.0
+load7 type: distributed start: 6 end: 7 startmagnitude: -2500.0 endmagnitude: -3000.0
+load8 type: distributed start: 7 end: 8 startmagnitude: -3000.0 endmagnitude: -3500.0
+load9 type: distributed start: 8 end: 9 startmagnitude: -3500.0 endmagnitude: -4000.0
+load10 type: distributed start: 9 end: 10 startmagnitude: -4000.0 endmagnitude: -4500.0
+load11 type: distributed start: 10 end: 11 startmagnitude: -4500.0 endmagnitude: -5000.0

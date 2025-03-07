@@ -13,17 +13,16 @@ node7 coord: 6.0
 node8 coord: 7.0
 node9 coord: 8.0
 
-
 [ELEMENTS]
 numelems: 8
 elem1 start: 1 end: 2
 elem2 start: 2 end: 3
 elem3 start: 3 end: 4
-elem3 start: 4 end: 5
-elem3 start: 5 end: 6
-elem3 start: 6 end: 7
-elem3 start: 7 end: 8
-elem3 start: 8 end: 9
+elem4 start: 4 end: 5
+elem5 start: 5 end: 6
+elem6 start: 6 end: 7
+elem7 start: 7 end: 8
+elem8 start: 8 end: 9
 
 [BOUNDARY_CONDITIONS]
 numbcs: 3

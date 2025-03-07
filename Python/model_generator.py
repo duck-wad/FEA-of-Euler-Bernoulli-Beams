@@ -137,5 +137,49 @@ class Beam:
         self.loads = np.append(self.loads, discretized_loads)
         print(self.loads)
 
-    def create_infile():
-        pass
+    def create_infile(self, filename):
+        f = open("../FEA Engine/Input/" + filename, "w")
+        
+        # write materials list
+        f.write("[MATERIALS]" + "\n")
+        f.write("E: " + str(self.E) + " I: " + str(self.I) + "\n \n")
+
+        # write nodes
+        f.write("[NODES]" + "\n")
+        f.write("numnodes: " + str(len(self.node_list)) + "\n")
+        for i in range(len(self.node_list)):
+            f.write("node" + str(i+1) + " coord: " + str(self.node_list[i]) + "\n")
+        f.write("\n")
+
+        # write elements
+        # elements numbered left to right along beam
+        f.write("[ELEMENTS]" + "\n")
+        f.write("numelems: " + str(len(self.node_list)-1) + "\n")
+        for i in range(len(self.node_list)-1):
+            f.write("elem" + str(i+1) + " start: " + str(i+1) + " end: " + str(i+2) + "\n")
+        f.write("\n")
+        
+        # write boundary conditions
+        f.write("[BOUNDARY_CONDITIONS]" + "\n")
+        f.write("numbcs: " + str(len(self.boundary_conditions)) + "\n")
+        for i in range(len(self.boundary_conditions)):
+            # find the corresponding node to the location
+            # since node list is sorted left to right, node is the location in the node_list array
+            node = np.where(np.abs(self.node_list - self.boundary_conditions[i]["location"]) < LOW_TOL)[0][0] + 1
+            
+            f.write("bc" + str(i+1) + " type: " + str(self.boundary_conditions[i]["type"]) + " location: " + str(node) + "\n")
+        f.write("\n")
+
+        # write loads
+        f.write("[LOADS]" + "\n")
+        f.write("numloads: " + str(len(self.loads)) + "\n")
+        for i in range(len(self.loads)):
+
+            startnode = np.where(np.abs(self.node_list - self.loads[i]["startloc"]) < LOW_TOL)[0][0] + 1
+
+            if(self.loads[i]["type"] == "distributed"):
+                endnode = np.where(np.abs(self.node_list - self.loads[i]["endloc"]) < LOW_TOL)[0][0] + 1
+                f.write("load" + str(i+1) + " type: " + str(self.loads[i]["type"]) + " start: " + str(startnode) + " end: " + str(endnode) + " startmagnitude: " + str(self.loads[i]["startmag"]) + " endmagnitude: " + str(self.loads[i]["endmag"]) + "\n")
+            else:
+                f.write("load" + str(i+1) + " type: " + str(self.loads[i]["type"]) + " location: " + str(startnode) + " magnitude: " + str(self.loads[i]["startmag"]) + "\n")
+        f.close()
