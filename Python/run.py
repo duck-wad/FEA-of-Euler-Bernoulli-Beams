@@ -27,10 +27,7 @@ beam.add_load("moment", 5.0, 3000.0)
 
 ''' DISCRETIZE BEAM '''
 # Input approximate element length
-# If the mesh length is too small the C++ engine spits out nonsense for some reason
-# I have not figured out why
-# Maybe instead of inputting element length, hardcode a ratio of element to segment
-beam.discretize(0.5)
+beam.discretize(0.05)
 
 
 

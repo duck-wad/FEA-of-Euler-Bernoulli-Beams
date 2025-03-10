@@ -93,7 +93,7 @@ class Beam:
                 increment += segment_meshlength
             discretized_list = np.append(discretized_list, segment_nodes)
                 
-        self.node_list = np.unique(np.append(self.node_list, discretized_list))
+        self.node_list = np.unique(np.round(np.append(self.node_list, discretized_list), decimals=3))
 
         self.discretize_distributed_loads()         
 
