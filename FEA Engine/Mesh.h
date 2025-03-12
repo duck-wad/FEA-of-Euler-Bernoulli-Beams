@@ -67,6 +67,8 @@ public:
 	void CalculateMoment();
 	void CalculateShear();
 
+	void WriteResults();
+
 protected:
 	double E;
 	double I;

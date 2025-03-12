@@ -30,7 +30,7 @@ void writeVectorToCSV(const std::vector<T>& vector, const std::string& filename)
 }
 
 template<typename T>
-void writeMatrixToCSV(const std::vector<std::vector<T>>& matrix, const std::string& filename) {
+void writeMatrixToCSV(const std::vector<std::vector<T>>& matrix, const std::string& filename, const std::vector<std::string>& colTitles = {}) {
 
 	// Open the file stream
 
@@ -40,14 +40,24 @@ void writeMatrixToCSV(const std::vector<std::vector<T>>& matrix, const std::stri
 		throw std::ios_base::failure("Failed to open file for writing.");
 	}
 
-	size_t rows = matrix[0].size();
-	size_t cols = matrix.size();
+	size_t cols = matrix[0].size();
+	size_t rows = matrix.size();
+
+	if (!colTitles.empty() && colTitles.size() == cols) {
+		for (size_t j = 0; j < cols; j++) {
+			file << colTitles[j];
+			if (j < cols - 1) {
+				file << ",";
+			}
+		}
+		file << "\n";
+	}
 
 	// Write the matrix to the file in row-major order
-	for (size_t i = 0; i < cols; ++i) {
-		for (size_t j = 0; j < rows; ++j) {
+	for (size_t i = 0; i < rows; ++i) {
+		for (size_t j = 0; j < cols; ++j) {
 			file << matrix[i][j];
-			if (j < rows - 1) { // Add a comma unless it's the last column
+			if (j < cols - 1) { // Add a comma unless it's the last column
 				file << ",";
 			}
 		}

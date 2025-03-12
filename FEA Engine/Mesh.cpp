@@ -58,11 +58,9 @@ Mesh::Mesh(std::string infile) {
 	displacements = GaussianElimination(globalStiffnessBC, globalForceBC);
 
 	SolveReactions();
-
-	writeVectorToCSV(displacements, "./Output/DISPLACEMENTS.csv");
-	writeVectorToCSV(reactions, "./Output/REACTIONS.csv");
-
 	//CalculateMoment();
+
+	WriteResults();
 }
 
 void Mesh::ReadFile(std::string fileName) {
@@ -334,4 +332,42 @@ void Mesh::CalculateMoment() {
 	}
 	printVector(moments);
 	printVector(momentCount);
+}
+
+void Mesh::WriteResults() {
+	std::vector<std::vector<double>> results;
+	results.emplace_back(globalCoordinates);
+
+	std::vector<double> translations;
+	std::vector<double> rotations;
+	std::vector<double> forceReactions;
+	std::vector<double> momentReactions;
+
+	//split up dof related to translation and rotation
+	for (size_t i = 0; i < displacements.size(); i++) {
+		if (i % 2 == 0) {
+			translations.emplace_back(displacements[i]);
+			forceReactions.emplace_back(reactions[i]);
+		}
+		else {
+			rotations.emplace_back(displacements[i]);
+			momentReactions.emplace_back(reactions[i]);
+		}
+	}
+
+	results.emplace_back(translations);
+	results.emplace_back(rotations);
+	results.emplace_back(forceReactions);
+	results.emplace_back(momentReactions);
+
+	results = transpose(results);
+
+	std::vector<std::string> titles;
+	titles.emplace_back("Node location (m)");
+	titles.emplace_back("Nodal displacement (m)");
+	titles.emplace_back("Nodal rotation (rad)");
+	titles.emplace_back("Force reactions (N)");
+	titles.emplace_back("Moment reactions (Nm)");
+
+	writeMatrixToCSV(results, "./Output/RESULTS.csv", titles);
 }
