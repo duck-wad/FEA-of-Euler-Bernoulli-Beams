@@ -59,7 +59,6 @@ std::vector<double> GaussianElimination(const std::vector<std::vector<double>>& 
 	}
 
 	std::vector<double> x = BackwardSubstitution(A_REF, b_REF);
-	printVector(x);
 	return x;
 }
 

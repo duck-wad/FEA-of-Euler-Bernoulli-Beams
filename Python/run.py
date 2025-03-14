@@ -28,14 +28,13 @@ beam.add_load("moment", 5.0, 3000.0)
 
 ''' DISCRETIZE BEAM '''
 # Input approximate element length
-beam.discretize(0.5)
+beam.discretize(0.1)
 
 
 
 ''' CREATE INPUT AND RUN PROGRAM '''
 beam.create_infile()
 beam.run()
-
 
 
 ''' RUN OUTPUT FOR GRAPHING '''

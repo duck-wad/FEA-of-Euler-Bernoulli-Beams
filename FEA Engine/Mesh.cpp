@@ -288,7 +288,6 @@ void Mesh::SolveReactions() {
 			reactions[globalDOF+1] = tempReactions[globalDOF+1];
 		}
 	}
-	printVector(reactions);
 }
 
 //moments are related to displacement by M=EI(d^2w/dx2)
@@ -330,8 +329,6 @@ void Mesh::CalculateMoment() {
 			moments[i] /= momentCount[i];
 		}
 	}
-	printVector(moments);
-	printVector(momentCount);
 }
 
 void Mesh::WriteResults() {
