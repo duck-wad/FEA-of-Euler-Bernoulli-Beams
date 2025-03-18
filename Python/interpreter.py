@@ -156,9 +156,9 @@ def plot_deformed_beam(beam, node_loc, x_fine, y_fine, theta_fine, node_force_rx
                   loc='bottom', bbox=[0, -0.5, 1, 0.3])
     plt.subplots_adjust(bottom=0.35)
 
-def plot_BMD_SFD(beam, x_fine, moment_fine, shear_fine):
+def plot_BMD_SFD(x_fine, moment_fine, shear_fine):
 
-    fig, ax = plt.subplots(2, 1, figsize=(14, 8))
+    fig, ax = plt.subplots(2, 1, figsize=(14, 9))
     
     # plot in kNm
     ax[0].plot(x_fine, moment_fine/1000, 'r-', linewidth=2, label="Moment")
@@ -182,20 +182,35 @@ def plot_BMD_SFD(beam, x_fine, moment_fine, shear_fine):
     ax[1].yaxis.set_minor_locator(AutoMinorLocator(2))
     ax[1].xaxis.set_minor_locator(AutoMinorLocator(2))
 
-    # add table similar to the displacement table in deformed shape function
+    # add table for node moment and shear at specific intervals along beam
+    # for table points can use the data from x_fine. get every 50th point for a table of 20 points
+    factor = int(INTERPOLATION_POINTS/20.0)
+    trimmed_node_loc = x_fine[::factor]
+    trimmed_node_moment = (moment_fine[::factor])/1000.0
+    trimmed_node_shear = (shear_fine[::factor])/1000.0
 
-    fig.tight_layout()
+    table_data = [
+        ["{:.2f}".format(x) for x in trimmed_node_loc],
+        ["{:.2f}".format(m) for m in trimmed_node_moment],
+        ["{:.2f}".format(v) for v in trimmed_node_shear],
+    ]
+    table = plt.table(cellText=table_data,
+                  rowLabels=["Location", "Moment (kNm)", "Shear (kN)"], 
+                  cellLoc='center', rowLoc='center',
+                  loc='bottom', bbox=[0, -0.7, 1, 0.4])
+    plt.subplots_adjust(bottom=0.25, hspace=0.4)
 
+# export the finely discretized results to an excel
+def export_to_excel(x, y, theta, moment, shear):
+    filepath = "./Results.xlsx"
 
-# take a list of location input and return the displacement, rotation etc.
-# use same CubicHermitSpline to interpolate between points
-def query_point(loc, node_loc, node_disp, node_rot):
+    results = np.array([x, y, theta, moment, shear])
+    results = np.transpose(results)
     
-    cs = CubicHermiteSpline(node_loc, node_disp, node_rot)
-    x_fine = np.linspace(min(node_loc), max(node_loc), 100)
-    y_fine = cs(x_fine)
-    theta_fine = cs.derivative()(x_fine)
-
+    df = pd.DataFrame(results, columns=["Node Location (m)", "Displacement (m)", "Rotation (rad)", 
+                                        "Moment (kNm)", "Shear (kN)"])
+    df.to_excel(filepath)
+    
 def run_output(beam):
 
     # read output from FEA and put into numpy arrays
@@ -212,7 +227,8 @@ def run_output(beam):
     plot_deformed_beam(beam, node_locations, x, y, theta, 
                        node_force_reactions, node_moment_reactions, 10)
                        
-    plot_BMD_SFD(beam, x, moment, shear)
-    
+    plot_BMD_SFD(x, moment, shear)
 
+    export_to_excel(x, y, theta, moment, shear)
+    
     plt.show()
