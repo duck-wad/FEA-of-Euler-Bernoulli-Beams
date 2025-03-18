@@ -21,7 +21,7 @@
 ## Displaying the Output
 - The run.py script calls "interpreter.py" which runs the post-processing activities.
 - The deformed shape of the beam is plotted along with the calculated reactions using matplotlib.
-- BMD and SFD are constructed as derivatives of a CubicHermiteSpline of the nodal displacement. SFD is constructed piecewise since CubicHermiteSpline only enforces second order continuity.
+- BMD and SFD are constructed as derivatives of a CubicHermiteSpline of the nodal displacement. 
 - Results are exported to an output Excel file for further analysis if needed.
 
 ### Example Beam Deformed Shape
