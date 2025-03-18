@@ -290,47 +290,6 @@ void Mesh::SolveReactions() {
 	}
 }
 
-//moments are related to displacement by M=EI(d^2w/dx2)
-//displacement within element approx by w(x)=N1(x)w1+N2(x)theta1... (cubic polynomial)
-//take derivative of the shape functions wrt x
-void Mesh::CalculateMoment() {
-	
-	//each element contributes some moment to the global node moment
-	//keep track of how many elements contribute in momentCount then take average
-	//since continuity is not enforced for moment across elements this is required to have a smooth BMD
-	moments.resize(maxnode, 0.0);
-	std::vector<int> momentCount(maxnode, 0);
-
-	for (size_t i = 0; i < elements.size(); i++) {
-		int startNode = elements[i].GetStart();
-		int endNode = elements[i].GetEnd();
-		double L = elements[i].GetLength();
-		double EI = elements[i].GetE() * elements[i].GetI();
-
-		int globalDOF1 = 2 * (startNode - 1);
-		int globalDOF2 = 2 * (endNode - 1);
-
-		double w1 = displacements[globalDOF1];
-		double theta1 = displacements[globalDOF1 + 1];
-		double w2 = displacements[globalDOF2];
-		double theta2 = displacements[globalDOF2 + 1];
-
-		//moment at left node x=0, moment at right node x=L
-		moments[startNode-1] += EI * (-6.0 / (L * L) * w1 - 4.0 / L * theta1 + 6.0 / (L * L) * w2 - 2.0 / L * theta2);
-		moments[endNode-1] += EI * (6.0 / (L * L) * w1 + 2.0 / L * theta1 - 6.0 / (L * L) * w2 + 4.0 / L * theta2);
-
-		momentCount[startNode - 1]++;
-		momentCount[endNode - 1]++;
-	}
-
-	//now average each moment by the corresponding momentCount
-	for (size_t i = 0; i < maxnode; i++) {
-		if (momentCount[i] > 0) {
-			moments[i] /= momentCount[i];
-		}
-	}
-}
-
 void Mesh::WriteResults() {
 	std::vector<std::vector<double>> results;
 	results.emplace_back(globalCoordinates);

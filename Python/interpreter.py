@@ -10,7 +10,6 @@ from scipy.signal import savgol_filter
 
 from model_generator import Beam
 
-
 LOW_TOL = 1e-8
 INTERPOLATION_POINTS = 1000
 
@@ -209,10 +208,10 @@ def run_output(beam):
     node_moment_reactions = results["Moment reactions (Nm)"]
 
     x, y, theta, moment, shear = calculate_values(beam, node_locations, node_displacements, node_rotations)
-    '''
+    
     plot_deformed_beam(beam, node_locations, x, y, theta, 
-                       node_force_reactions, node_moment_reactions, scale=1)'
-                       '''
+                       node_force_reactions, node_moment_reactions, 10)
+                       
     plot_BMD_SFD(beam, x, moment, shear)
     
 

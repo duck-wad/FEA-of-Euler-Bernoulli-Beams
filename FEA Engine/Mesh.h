@@ -63,10 +63,6 @@ public:
 	void ApplyBCs();
 	void SolveReactions();
 
-	//post-processing functions
-	void CalculateMoment();
-	void CalculateShear();
-
 	void WriteResults();
 
 protected:
