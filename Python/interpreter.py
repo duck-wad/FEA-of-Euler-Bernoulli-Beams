@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.ticker import AutoMinorLocator
 import matplotlib as mpl
-from scipy.interpolate import CubicHermiteSpline
+from scipy.interpolate import CubicHermiteSpline, CubicSpline
 from scipy.signal import savgol_filter
 
 from model_generator import Beam
@@ -14,20 +14,73 @@ from model_generator import Beam
 LOW_TOL = 1e-8
 INTERPOLATION_POINTS = 1000
 
-# plot the deformed shape of the beam, boundary conditions, reactions
-# plot table with displacement and rotation information at set intervals 
-def plot_deformed_beam(beam, node_loc, node_disp, node_rot, node_force_rxn, 
-                       node_moment_rxn, scale=1):
-
+# calculate the fine discretized x-locations and their corresponding output
+def calculate_values(beam, node_loc, node_disp, node_rot):
     # approximating the displacement as a cubic function, which makes sense since in FEM we are approximating the PDE w/ a cubic function
     # CubicHermiteSpline enforces slope at each node
     cs = CubicHermiteSpline(node_loc, node_disp, node_rot)
 
     # points for the smooth deformed beam curve
     x_fine = np.linspace(min(node_loc), max(node_loc), INTERPOLATION_POINTS)
+
     y_fine = cs(x_fine)
     theta_fine = cs.derivative()(x_fine)
 
+    # the cubic spline is continuous to the second derivative, which means the moment curve can 
+    # be derived from cs. however shear is not continuous (has stepped look to it)
+    # so apply a savgol filter to smooth it out
+    # need to do this on a piecewise basis or else the vertical discontinuities at reactions/point loads
+    # won't be vertical anymore
+    moment_fine = cs.derivative().derivative()(x_fine) * beam.E * beam.I
+
+    point_loads = beam.loads[beam.loads["type"]=="force"] 
+    supports = beam.boundary_conditions
+
+    discontinuity_locations = np.array([])
+    for i in point_loads:
+        discontinuity_locations = np.append(discontinuity_locations, i["startloc"])
+    for i in supports:
+        discontinuity_locations = np.append(discontinuity_locations, i["location"])
+
+    discontinuity_locations = np.sort(np.unique(discontinuity_locations))
+
+    # get the indices in x_fine where the discontinuities should occur
+    discontinuity_indices = np.array([])
+    for i in discontinuity_locations:
+        exact_loc = np.where(x_fine == i)[0]
+        if exact_loc.size != 0:
+            discontinuity_indices = np.append(discontinuity_indices, exact_loc[0])
+            continue
+        filtered_x_fine = np.where(x_fine < i)[0]
+        discontinuity_indices = np.append(discontinuity_indices, np.argmax(filtered_x_fine))
+
+    # splice x_fine into chunks defined by the discontinuities
+    shear_fine = np.array([])
+    for i in range(len(discontinuity_indices)-1):
+        # add 1 to the index so the starting location always to the right of the discontinuity node
+        # except at the start of the beam, in which case the index is included in the start
+        start = int(discontinuity_indices[i]+1)
+        end = int(discontinuity_indices[i+1]+1)
+        if i == 0:
+            start = int(discontinuity_indices[i])
+        x_spliced = x_fine[start:end]
+        
+        # apply the savgol filter on a piecewise basis to preserve vertical discontinuities
+        # apply filter twice for better smoothing
+        shear_spliced = savgol_filter(savgol_filter(
+            cs.derivative().derivative().derivative()(x_spliced), 
+            window_length=99, polyorder=3), window_length=99, polyorder=1)*beam.E*beam.I
+        
+        shear_fine = np.append(shear_fine, shear_spliced)   
+
+    return [x_fine, y_fine, theta_fine, moment_fine, shear_fine]
+
+
+# plot the deformed shape of the beam, boundary conditions, reactions
+# plot table with displacement and rotation information at set intervals 
+def plot_deformed_beam(beam, node_loc, x_fine, y_fine, theta_fine, node_force_rxn, 
+                       node_moment_rxn, scale=1):
+    
     plt.figure(figsize=(14, 8))
 
     # undeformed beam
@@ -104,29 +157,13 @@ def plot_deformed_beam(beam, node_loc, node_disp, node_rot, node_force_rxn,
                   loc='bottom', bbox=[0, -0.5, 1, 0.3])
     plt.subplots_adjust(bottom=0.35)
 
-def plot_BMD_SFD(beam, node_loc, node_disp, node_rot):
-    # can use the approximate displacement function as the basis for calculating the moment and shear
-
-    cs = CubicHermiteSpline(node_loc, node_disp, node_rot)
-
-    # points for the smooth deformed beam curve
-    x_fine = np.linspace(min(node_loc), max(node_loc), 1000)
-
-    moment_fine = cs.derivative().derivative()(x_fine) * beam.E * beam.I
-    shear_raw = cs.derivative().derivative().derivative()(x_fine) * beam.E * beam.I
-
-    # since the CubicHermiteSpline only ensures 2nd derivative continuity, the shear_raw has a 
-    # stepped appearance. so to smooth it out apply the Savitzky-Golay filter
-    # however this makes it so jumps due to reactions/point loads are not vertical
-    # so need to construct the SFD in a piecewise fashion, treating each beam segment 
-    # between either a point load or a support as a SFD segment
-    shear_fine = savgol_filter(shear_raw, window_length=50, polyorder=0)
+def plot_BMD_SFD(beam, x_fine, moment_fine, shear_fine):
 
     fig, ax = plt.subplots(2, 1, figsize=(14, 8))
     
     # plot in kNm
     ax[0].plot(x_fine, moment_fine/1000, 'r-', linewidth=2, label="Moment")
-    ax[0].plot(node_loc, np.zeros_like(node_loc), 'k--', label="Undeformed Shape")
+    ax[0].plot(x_fine, np.zeros_like(x_fine), 'k--', label="Undeformed Shape")
     ax[0].grid()
     ax[0].set_title("Bending Moment Diagram")
     ax[0].set_xlabel("Beam Length (m)")
@@ -137,7 +174,7 @@ def plot_BMD_SFD(beam, node_loc, node_disp, node_rot):
 
     # plot in kN
     ax[1].plot(x_fine, shear_fine/1000, 'g-', linewidth=2, label="Shear")
-    ax[1].plot(node_loc, np.zeros_like(node_loc), 'k--', label="Undeformed Shape")
+    ax[1].plot(x_fine, np.zeros_like(x_fine), 'k--', label="Undeformed Shape")
     ax[1].grid()
     ax[1].set_title("Shear Force Diagram")
     ax[1].set_xlabel("Beam Length (m)")
@@ -160,9 +197,6 @@ def query_point(loc, node_loc, node_disp, node_rot):
     y_fine = cs(x_fine)
     theta_fine = cs.derivative()(x_fine)
 
-
-
-
 def run_output(beam):
 
     # read output from FEA and put into numpy arrays
@@ -174,8 +208,12 @@ def run_output(beam):
     node_force_reactions = results["Force reactions (N)"]
     node_moment_reactions = results["Moment reactions (Nm)"]
 
-    plot_deformed_beam(beam, node_locations, node_displacements, node_rotations, 
-                       node_force_reactions, node_moment_reactions, scale=1)
-    plot_BMD_SFD(beam, node_locations, node_displacements, node_rotations)
+    x, y, theta, moment, shear = calculate_values(beam, node_locations, node_displacements, node_rotations)
+    '''
+    plot_deformed_beam(beam, node_locations, x, y, theta, 
+                       node_force_reactions, node_moment_reactions, scale=1)'
+                       '''
+    plot_BMD_SFD(beam, x, moment, shear)
     
+
     plt.show()
