@@ -25,7 +25,8 @@
 - Results are exported to an output Excel file for further analysis if needed.
 
 ### Example Beam Deformed Shape
-![image](https://github.com/user-attachments/assets/b77f1da0-0b13-4e36-a0ae-d9ec9a6efc89)
+![image](https://github.com/user-attachments/assets/b957def9-49e6-409b-9f32-395867026a22)
 
 ### Example BMD/SFD
-![image](https://github.com/user-attachments/assets/6068127e-f01d-412e-b497-154ba712e519)
+![image](https://github.com/user-attachments/assets/4d529655-699a-4df0-81e1-fef2a3e0e520)
+
