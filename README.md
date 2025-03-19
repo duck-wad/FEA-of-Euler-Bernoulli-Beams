@@ -2,7 +2,7 @@
 
 - This repository contains simple code to create a beam with boundary conditions and loads, and analyze the displacements and reactions using the Finite Element Method for Euler-Bernoulli beams.
 - This was made as a simple exercise to improve my coding skills and learn about the FEA process!
-- Python scripts are used to generate a text input file which is read by a C++ program to perform the FEA. 
+- Python scripts are used to generate a text input file which is read by a C++ program to perform the FEA. Python code then reads the C++ output from a CSV and performs post-processing exercises like plotting deformations and making BMD/SFD.
 
 ## Generating the Input
 1. In the run.py script, create a beam with a specified length and material parameters.
@@ -19,3 +19,13 @@
 - Currently nodal displacements and reactions are output from the program. In the future, moment and shear will also be output.
 
 ## Displaying the Output
+- The run.py script calls "interpreter.py" which runs the post-processing activities.
+- The deformed shape of the beam is plotted along with the calculated reactions using matplotlib.
+- BMD and SFD are constructed as derivatives of a CubicHermiteSpline of the nodal displacement. 
+- Results are exported to an output Excel file for further analysis if needed.
+
+### Example Beam Deformed Shape
+![image](https://github.com/user-attachments/assets/b77f1da0-0b13-4e36-a0ae-d9ec9a6efc89)
+
+### Example BMD/SFD
+![image](https://github.com/user-attachments/assets/6068127e-f01d-412e-b497-154ba712e519)
