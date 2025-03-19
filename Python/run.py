@@ -23,8 +23,7 @@ beam.add_BC("pin", 8.0)
 # Distributed loads require end location and magnitude
 beam.add_load("distributed", 0.0, 0.0, 5.0, -5000.0)
 beam.add_load("moment", 5.0, 3000.0)
-beam.add_load("force", 3.0, 5000.0)
-beam.add_load("force", 7.0, -2000.0)
+beam.add_load("force", 7.0, -5000.0)
 
 
 

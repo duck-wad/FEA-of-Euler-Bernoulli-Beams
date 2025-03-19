@@ -88,6 +88,8 @@ def plot_deformed_beam(beam, node_loc, x_fine, y_fine, theta_fine, node_force_rx
     # deformed beam
     plt.plot(x_fine, y_fine * scale, 'b-', linewidth=2, label="Deformed Shape")
 
+    plt.plot(0, 0, 'r-', linewidth=2, label="Reactions")
+
     ax = plt.gca()
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.xaxis.set_minor_locator(AutoMinorLocator(2))
@@ -125,18 +127,49 @@ def plot_deformed_beam(beam, node_loc, x_fine, y_fine, theta_fine, node_force_rx
         ax.add_patch(plt.arrow(bc_loc, -shape_scale*2, 0, shape_scale*2, 
                                width=0.02, length_includes_head=True, head_width=0.1, 
                                ec="none", color="red"))
-        ax.text(bc_loc+0.05, -shape_scale*2-0.05, str(bc_force_rxn))
+        ax.text(bc_loc+0.05, -shape_scale*2, (str(bc_force_rxn)+" kN"))
 
         # only add moment reactions for clamp supports
         if bc["type"]=="clamp":
             path = "arc3,rad=" + str(shape_scale*2)
-            #style = patches.ArrowStyle("Fancy", head_length=0.1, head_width=0.1, tail_width=0.02)
             style = patches.ArrowStyle('simple', head_length=10, head_width=8, tail_width=0.05)
             ax.add_patch(patches.FancyArrowPatch((bc_loc+shape_scale, 0), (bc_loc-shape_scale, 0), 
                                                  arrowstyle=style, connectionstyle=path, color="red"))
-            ax.text(bc_loc+0.05, shape_scale, str(bc_moment_rxn))
+            ax.text(bc_loc+0.05, shape_scale*0.75, (str(bc_moment_rxn)+" kN*m"))
 
     # ADD VISUAL FOR BEAM LOADING
+    loads = beam.undiscretized_loads
+    max_load = np.nanmax(np.abs(np.unique(np.concatenate((loads["startmag"], loads["endmag"])))))
+    load_scale = shape_scale*2.0 / max_load
+
+    for load in loads:
+        startloc = load["startloc"]
+        startmag = load["startmag"]
+        endloc = load["endloc"]
+        endmag = load["endmag"]
+        if load["type"]=="force":
+            ax.add_patch(plt.arrow(startloc, -startmag*load_scale, 0, startmag*load_scale, 
+                               width=0.02, length_includes_head=True, head_width=0.1, 
+                               ec="none", color="green"))
+            ax.text(startloc+0.05, -startmag*load_scale, (str(np.abs(startmag))+" kN"))
+        elif load["type"]=="moment":
+            path = "arc3,rad=" + str(shape_scale*2)
+            style = patches.ArrowStyle('simple', head_length=10, head_width=8, tail_width=0.05)
+            ax.add_patch(patches.FancyArrowPatch((startloc+shape_scale, 0), (startloc-shape_scale, 0), 
+                                                 arrowstyle=style, connectionstyle=path, color="green"))
+            ax.text(startloc+0.05, shape_scale*0.75, (str(startmag)+" kN*m"))
+        elif load["type"]=="distributed":
+            patch_coords = plt.Polygon([[startloc, 0],[endloc, 0],
+                                        [endloc,-endmag*load_scale],[startloc,-startmag*load_scale]],
+                                        color="green", alpha=0.5)
+            ax.add_patch(patch_coords)
+
+            if np.abs(startmag - 0.0) > LOW_TOL:
+                ax.text(startloc+0.05, -startmag*load_scale, (str(np.abs(startmag))+" kN"))
+            if np.abs(endmag - 0.0) > LOW_TOL:
+                ax.text(endloc+0.05, -endmag*load_scale, (str(np.abs(endmag))+" kN"))
+
+            
 
     # add table for node displacement and slope at specific intervals along beam
     # for table points can use the data from x_fine. get every 50th point for a table of 20 points
@@ -225,7 +258,7 @@ def run_output(beam):
     x, y, theta, moment, shear = calculate_values(beam, node_locations, node_displacements, node_rotations)
     
     plot_deformed_beam(beam, node_locations, x, y, theta, 
-                       node_force_reactions, node_moment_reactions, 10)
+                       node_force_reactions, node_moment_reactions)
                        
     plot_BMD_SFD(x, moment, shear)
 

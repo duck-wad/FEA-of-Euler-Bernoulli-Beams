@@ -16,6 +16,7 @@ class Beam:
         self.node_list = np.array([0.0, L])
         self.boundary_conditions = np.empty(0, dtype=BCtype)
         self.loads = np.empty(0, dtype=loadtype)
+        self.undiscretized_loads = np.empty(0, dtype=loadtype)
 
     def print_info(self):
         print("Length: " + str(self.L))
@@ -94,6 +95,8 @@ class Beam:
             discretized_list = np.append(discretized_list, segment_nodes)
                 
         self.node_list = np.unique(np.round(np.append(self.node_list, discretized_list), decimals=3))
+
+        self.undiscretized_loads = self.loads
 
         self.discretize_distributed_loads()         
 
