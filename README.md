@@ -16,7 +16,7 @@
 - The C++ program reads the "INPUT.txt" file generated from the Python script. 
 - The mesh is discretized according to the node and element input from the infile. Elemental stiffness matrices and force vectors are developed and assembled into the global stiffness matrix and global force vector.
 - The system of equations is solved using Gaussian Elimination.
-- Currently nodal displacements and reactions are output from the program. In the future, moment and shear will also be output.
+- Currently only the vertical translation and rotation of each node is calculated. In future iterations, I want to implement axial translation, angled beams, and frames.
 
 ## Displaying the Output
 - The run.py script calls "interpreter.py" which runs the post-processing activities.
