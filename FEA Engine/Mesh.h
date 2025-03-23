@@ -14,7 +14,7 @@ struct BC {
 };
 
 //store the loads in a list of structs
-enum class LoadType {FORCE, MOMENT, DISTRIBUTED};
+enum class LoadType {VFORCE, HFORCE, MOMENT, DISTRIBUTED};
 struct Load {
 	LoadType type;
 	//for point loads, only startNode is used
@@ -26,7 +26,7 @@ struct Load {
 
 class Element {
 public:
-	Element(double L, double E, double I, int start, int end);
+	Element(double L, double E, double I, double A, int start, int end);
 	void ConstructForce(double w1, double w2);
 	std::vector<std::vector<double>> GetStiffness() { return elementStiffness; }
 	std::vector<double> GetForce() { return elementForce; }
@@ -40,6 +40,7 @@ public:
 		return elemE; 
 	}
 	double GetI() { return elemI; }
+	double getA() { return elemA;  }
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;
@@ -50,6 +51,7 @@ protected:
 	int endNode;
 	double elemE;
 	double elemI;
+	double elemA;
 };
 
 class Mesh
@@ -62,12 +64,12 @@ public:
 	void Assemble();
 	void ApplyBCs();
 	void SolveReactions();
-
 	void WriteResults();
 
 protected:
 	double E;
 	double I;
+	double A;
 
 	//coordinates is 1D vector since only x values
 	std::vector<double> globalCoordinates;
@@ -99,8 +101,5 @@ protected:
 	std::vector<double> displacements;
 	//vector with support reactions calculated in post-processing Kd - f
 	std::vector<double> reactions;
-
-	std::vector<double> moments;
-	std::vector<double> shears;
 };
 

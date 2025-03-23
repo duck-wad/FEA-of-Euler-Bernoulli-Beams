@@ -5,17 +5,23 @@
 #include "MatrixSolver.h"
 
 //constructor makes the element stiffness matrix using 2-point gauss quadrature
-Element::Element(double L, double E, double I, int start, int end){
+Element::Element(double L, double E, double I, double A, int start, int end){
 
 	Length = L;
 	startNode = start;
 	endNode = end;
 	elemE = E;
 	elemI = I;
+	elemA = A;
 	
-	elementStiffness.resize(4, std::vector<double>(4));
-	elementForce.resize(4);
+	elementStiffness.resize(6, std::vector<double>(6));
+	elementForce.resize(6);
 
+	//have temp matrices for the components of element stiffness for transverse and axial
+	std::vector<std::vector<double>> transverseStiffness(4, std::vector<double>(4, 0.0));
+	std::vector<std::vector<double>> axialStiffness(4, std::vector<double>(4, 0.0));
+
+	//construct the transverse part of the element stiffness
 	double Jacobian = L / 2.0;
 
 	//store the B vectors
@@ -30,10 +36,20 @@ Element::Element(double L, double E, double I, int start, int end){
 	}
 
 	for (size_t i = 0; i < B.size(); i++) {
-		elementStiffness += (outerProduct(B[i], B[i]) * gaussweight2[i]);
+		transverseStiffness += (outerProduct(B[i], B[i]) * gaussweight2[i]);
 	}
 
-	elementStiffness *= (elemE * elemI * Jacobian);
+	transverseStiffness *= (elemE * elemI * Jacobian);
+
+	//construct the axial part of element stiffness. Just define it easily as AE/L
+	axialStiffness[0][0] = elemE * elemA / L;
+	axialStiffness[0][1] = -elemE * elemA / L;
+	axialStiffness[1][0] = -elemE * elemA / L;
+	axialStiffness[1][1] = elemE * elemA / L;
+
+	//combine into elementStiffness
+
+
 }
 
 void Element::ConstructForce(double w1, double w2) {
@@ -73,7 +89,7 @@ void Mesh::ReadFile(std::string fileName) {
 	}
 
 	infile >> junk;
-	infile >> junk >> E >> junk >> I;
+	infile >> junk >> E >> junk >> I >> junk >> A;
 
 	//read node coordinates
 	infile >> junk;
@@ -133,10 +149,13 @@ void Mesh::ReadFile(std::string fileName) {
 
 			distributedLoads.emplace_back(Load{ LoadType::DISTRIBUTED, startNode, endNode, startMag, endMag });
 		}
-		else if (tempstring == "force" || tempstring == "moment") {
+		else if (tempstring == "vforce" || tempstring == "hforce" || tempstring == "moment") {
 			infile >> junk >> startNode >> junk >> startMag;
-			if (tempstring == "force") {
-				pointLoads.emplace_back(Load{ LoadType::FORCE, startNode, -1, startMag, 0 });
+			if (tempstring == "vforce") {
+				pointLoads.emplace_back(Load{ LoadType::VFORCE, startNode, -1, startMag, 0 });
+			}
+			else if (tempstring == "hforce") {
+				pointLoads.emplace_back(Load{ LoadType::HFORCE, startNode, -1, startMag, 0 });
 			}
 			else {
 				pointLoads.emplace_back(Load{ LoadType::MOMENT, startNode, -1, startMag, 0 });
@@ -160,7 +179,7 @@ void Mesh::Discretize() {
 		double startPos = globalCoordinates[connectivity[i][0] - 1];
 		double endPos = globalCoordinates[connectivity[i][1] - 1];
 		double length = abs(endPos - startPos);
-		elements.emplace_back(Element(length, E, I, connectivity[i][0], connectivity[i][1]));
+		elements.emplace_back(Element(length, E, I, A, connectivity[i][0], connectivity[i][1]));
 	}
 
 	//loop through distributed force list. only apply the distributed loads to elemental force. apply point loads to global force
