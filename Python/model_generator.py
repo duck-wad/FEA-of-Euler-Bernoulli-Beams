@@ -43,7 +43,7 @@ class Beam:
 
         self.boundary_conditions = np.append(self.boundary_conditions, np.array([(type, location)], dtype=self.boundary_conditions.dtype))
 
-    def add_load(self, type, startloc, startmag, endloc=None, endmag=None):
+    def add_load(self, type, startloc, startmag, endloc=None, endmag=None, angle=None):
 
         # safety checks
         if type not in ("moment", "force", "distributed"):
@@ -64,8 +64,24 @@ class Beam:
         if (type == "distributed" and endloc==None):
             print("Distributed loads must have an end location.")
             return
+        if((type == "moment" or type == "distributed") and angle != None):
+            print("Moment and distributed loads cannot be defined at an angle.")
+            return
 
-        self.loads = np.append(self.loads, np.array([(type, startloc, endloc, startmag, endmag)], dtype=self.loads.dtype))
+        # different handling for point force loads which can be defined with angles
+        # default if no angle is provided is to be vertical
+        if(type == "force" and angle == None):
+            self.loads = np.append(self.loads, np.array([("vforce", startloc, endloc, startmag, endmag)], dtype=self.loads.dtype))
+        # split into vertical and horizontal components here
+        # positive vertical is upwards, positive horizontal is to the right
+        # angle is defined clockwise from the vertical
+        elif(type == "force" and angle != None):
+            hforce = np.sin(np.radians(angle)) * startmag
+            vforce = np.cos(np.radians(angle)) * startmag
+            self.loads = np.append(self.loads, np.array([("vforce", startloc, endloc, vforce, endmag)], dtype=self.loads.dtype))
+            self.loads = np.append(self.loads, np.array([("hforce", startloc, endloc, hforce, endmag)], dtype=self.loads.dtype))
+        else:    
+            self.loads = np.append(self.loads, np.array([(type, startloc, endloc, startmag, endmag)], dtype=self.loads.dtype))
 
     # in order to discretize, first get a list of all the points where BC or load has been applied
     # ensure those points are nodes in the node list
@@ -139,8 +155,8 @@ class Beam:
         
         self.loads = np.append(self.loads, discretized_loads)
 
-    def create_infile(self):
-        f = open("../FEA Engine/Input/INPUT.txt", "w")
+    def create_infile(self, filename):
+        f = open("../FEA Engine/Input/"+str(filename), "w")
         
         # write materials list
         f.write("[MATERIALS]" + "\n")
