@@ -8,10 +8,11 @@ BCtype = [("type", "U10"), ("location", "f8")]
 loadtype = [("type", "U12"), ("startloc", "f8"), ("endloc", "f8"), ("startmag", "f8"), ("endmag", "f8")]
 
 class Beam:
-    def __init__(self, L, E, I):
+    def __init__(self, L, E, I, A):
         self.L = L
         self.E = E
         self.I = I
+        self.A = A
 
         self.node_list = np.array([0.0, L])
         self.boundary_conditions = np.empty(0, dtype=BCtype)
@@ -160,7 +161,7 @@ class Beam:
         
         # write materials list
         f.write("[MATERIALS]" + "\n")
-        f.write("E: " + str(self.E) + " I: " + str(self.I) + "\n \n")
+        f.write("E: " + str(self.E) + " I: " + str(self.I) + " A: " + str(self.A) + "\n \n")
 
         # write nodes
         f.write("[NODES]" + "\n")

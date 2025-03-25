@@ -36,11 +36,6 @@ public:
 	double GetLength() { return Length; }
 	int GetStart() { return startNode; }
 	int GetEnd() { return endNode; }
-	double GetE() { 
-		return elemE; 
-	}
-	double GetI() { return elemI; }
-	double getA() { return elemA;  }
 
 protected:
 	std::vector<std::vector<double>> elementStiffness;
