@@ -5,7 +5,10 @@ import os
 
 LOW_TOL = 1e-8
 BCtype = [("type", "U10"), ("location", "f8")]
-loadtype = [("type", "U12"), ("startloc", "f8"), ("endloc", "f8"), ("startmag", "f8"), ("endmag", "f8")]
+# this angle parameter is not important. its only there for the undiscretized loads
+# so the interpreter can read the angle of the applied load
+# all cases except for when adding a force to the undiscretized loads list angle can be set to whatever
+loadtype = [("type", "U12"), ("startloc", "f8"), ("endloc", "f8"), ("startmag", "f8"), ("endmag", "f8"), ("angle", "f8")]
 
 class Beam:
     def __init__(self, L, E, I, A):
@@ -72,17 +75,19 @@ class Beam:
         # different handling for point force loads which can be defined with angles
         # default if no angle is provided is to be vertical
         if(type == "force" and angle == None):
-            self.loads = np.append(self.loads, np.array([("vforce", startloc, endloc, startmag, endmag)], dtype=self.loads.dtype))
+            self.loads = np.append(self.loads, np.array([("vforce", startloc, endloc, startmag, endmag, 0.0)], dtype=self.loads.dtype))
         # split into vertical and horizontal components here
         # positive vertical is upwards, positive horizontal is to the right
         # angle is defined clockwise from the vertical
         elif(type == "force" and angle != None):
             hforce = np.sin(np.radians(angle)) * startmag
             vforce = np.cos(np.radians(angle)) * startmag
-            self.loads = np.append(self.loads, np.array([("vforce", startloc, endloc, vforce, endmag)], dtype=self.loads.dtype))
-            self.loads = np.append(self.loads, np.array([("hforce", startloc, endloc, hforce, endmag)], dtype=self.loads.dtype))
+            self.loads = np.append(self.loads, np.array([("vforce", startloc, endloc, vforce, endmag, 0.0)], dtype=self.loads.dtype))
+            self.loads = np.append(self.loads, np.array([("hforce", startloc, endloc, hforce, endmag, 0.0)], dtype=self.loads.dtype))
         else:    
-            self.loads = np.append(self.loads, np.array([(type, startloc, endloc, startmag, endmag)], dtype=self.loads.dtype))
+            self.loads = np.append(self.loads, np.array([(type, startloc, endloc, startmag, endmag, 0.0)], dtype=self.loads.dtype))
+
+        self.undiscretized_loads = np.append(self.undiscretized_loads, np.array([(type, startloc, endloc, startmag, endmag, angle)], dtype=self.loads.dtype))
 
     # in order to discretize, first get a list of all the points where BC or load has been applied
     # ensure those points are nodes in the node list
@@ -112,8 +117,6 @@ class Beam:
             discretized_list = np.append(discretized_list, segment_nodes)
                 
         self.node_list = np.unique(np.round(np.append(self.node_list, discretized_list), decimals=3))
-
-        self.undiscretized_loads = self.loads
 
         self.discretize_distributed_loads()         
 
@@ -149,7 +152,7 @@ class Beam:
             temp_startmag = start_mag
             segment_loads = np.zeros(0, dtype=loadtype)
             for i in range(numel):
-                segment_loads = np.append(segment_loads, np.array([("distributed", segment_nodes[i], segment_nodes[i+1], temp_startmag, temp_startmag+load_change)], dtype=loadtype))
+                segment_loads = np.append(segment_loads, np.array([("distributed", segment_nodes[i], segment_nodes[i+1], temp_startmag, temp_startmag+load_change, 0.0)], dtype=loadtype))
                 temp_startmag += load_change
 
             discretized_loads = np.append(discretized_loads, segment_loads)

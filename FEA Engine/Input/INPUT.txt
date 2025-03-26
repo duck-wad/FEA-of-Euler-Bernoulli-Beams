@@ -1,5 +1,5 @@
 [MATERIALS]
-E: 200000000000.0 I: 0.00012 A: 0.03
+E: 200000000 I: 0.00012 A: 3e-05
  
 [NODES]
 numnodes: 81
@@ -175,58 +175,56 @@ bc2 type: roller location: 51
 bc3 type: pin location: 81
 
 [LOADS]
-numloads: 54
+numloads: 52
 load1 type: moment location: 51 magnitude: 3000.0
 load2 type: vforce location: 71 magnitude: -5000.0
-load3 type: vforce location: 41 magnitude: 2.4492935982947064e-11
-load4 type: hforce location: 41 magnitude: 400000.0
-load5 type: distributed start: 1 end: 2 startmagnitude: 0.0 endmagnitude: -100.0
-load6 type: distributed start: 2 end: 3 startmagnitude: -100.0 endmagnitude: -200.0
-load7 type: distributed start: 3 end: 4 startmagnitude: -200.0 endmagnitude: -300.0
-load8 type: distributed start: 4 end: 5 startmagnitude: -300.0 endmagnitude: -400.0
-load9 type: distributed start: 5 end: 6 startmagnitude: -400.0 endmagnitude: -500.0
-load10 type: distributed start: 6 end: 7 startmagnitude: -500.0 endmagnitude: -600.0
-load11 type: distributed start: 7 end: 8 startmagnitude: -600.0 endmagnitude: -700.0
-load12 type: distributed start: 8 end: 9 startmagnitude: -700.0 endmagnitude: -800.0
-load13 type: distributed start: 9 end: 10 startmagnitude: -800.0 endmagnitude: -900.0
-load14 type: distributed start: 10 end: 11 startmagnitude: -900.0 endmagnitude: -1000.0
-load15 type: distributed start: 11 end: 12 startmagnitude: -1000.0 endmagnitude: -1100.0
-load16 type: distributed start: 12 end: 13 startmagnitude: -1100.0 endmagnitude: -1200.0
-load17 type: distributed start: 13 end: 14 startmagnitude: -1200.0 endmagnitude: -1300.0
-load18 type: distributed start: 14 end: 15 startmagnitude: -1300.0 endmagnitude: -1400.0
-load19 type: distributed start: 15 end: 16 startmagnitude: -1400.0 endmagnitude: -1500.0
-load20 type: distributed start: 16 end: 17 startmagnitude: -1500.0 endmagnitude: -1600.0
-load21 type: distributed start: 17 end: 18 startmagnitude: -1600.0 endmagnitude: -1700.0
-load22 type: distributed start: 18 end: 19 startmagnitude: -1700.0 endmagnitude: -1800.0
-load23 type: distributed start: 19 end: 20 startmagnitude: -1800.0 endmagnitude: -1900.0
-load24 type: distributed start: 20 end: 21 startmagnitude: -1900.0 endmagnitude: -2000.0
-load25 type: distributed start: 21 end: 22 startmagnitude: -2000.0 endmagnitude: -2100.0
-load26 type: distributed start: 22 end: 23 startmagnitude: -2100.0 endmagnitude: -2200.0
-load27 type: distributed start: 23 end: 24 startmagnitude: -2200.0 endmagnitude: -2300.0
-load28 type: distributed start: 24 end: 25 startmagnitude: -2300.0 endmagnitude: -2400.0
-load29 type: distributed start: 25 end: 26 startmagnitude: -2400.0 endmagnitude: -2500.0
-load30 type: distributed start: 26 end: 27 startmagnitude: -2500.0 endmagnitude: -2600.0
-load31 type: distributed start: 27 end: 28 startmagnitude: -2600.0 endmagnitude: -2700.0
-load32 type: distributed start: 28 end: 29 startmagnitude: -2700.0 endmagnitude: -2800.0
-load33 type: distributed start: 29 end: 30 startmagnitude: -2800.0 endmagnitude: -2900.0
-load34 type: distributed start: 30 end: 31 startmagnitude: -2900.0 endmagnitude: -3000.0
-load35 type: distributed start: 31 end: 32 startmagnitude: -3000.0 endmagnitude: -3100.0
-load36 type: distributed start: 32 end: 33 startmagnitude: -3100.0 endmagnitude: -3200.0
-load37 type: distributed start: 33 end: 34 startmagnitude: -3200.0 endmagnitude: -3300.0
-load38 type: distributed start: 34 end: 35 startmagnitude: -3300.0 endmagnitude: -3400.0
-load39 type: distributed start: 35 end: 36 startmagnitude: -3400.0 endmagnitude: -3500.0
-load40 type: distributed start: 36 end: 37 startmagnitude: -3500.0 endmagnitude: -3600.0
-load41 type: distributed start: 37 end: 38 startmagnitude: -3600.0 endmagnitude: -3700.0
-load42 type: distributed start: 38 end: 39 startmagnitude: -3700.0 endmagnitude: -3800.0
-load43 type: distributed start: 39 end: 40 startmagnitude: -3800.0 endmagnitude: -3900.0
-load44 type: distributed start: 40 end: 41 startmagnitude: -3900.0 endmagnitude: -4000.0
-load45 type: distributed start: 41 end: 42 startmagnitude: -4000.0 endmagnitude: -4100.0
-load46 type: distributed start: 42 end: 43 startmagnitude: -4100.0 endmagnitude: -4200.0
-load47 type: distributed start: 43 end: 44 startmagnitude: -4200.0 endmagnitude: -4300.0
-load48 type: distributed start: 44 end: 45 startmagnitude: -4300.0 endmagnitude: -4400.0
-load49 type: distributed start: 45 end: 46 startmagnitude: -4400.0 endmagnitude: -4500.0
-load50 type: distributed start: 46 end: 47 startmagnitude: -4500.0 endmagnitude: -4600.0
-load51 type: distributed start: 47 end: 48 startmagnitude: -4600.0 endmagnitude: -4700.0
-load52 type: distributed start: 48 end: 49 startmagnitude: -4700.0 endmagnitude: -4800.0
-load53 type: distributed start: 49 end: 50 startmagnitude: -4800.0 endmagnitude: -4900.0
-load54 type: distributed start: 50 end: 51 startmagnitude: -4900.0 endmagnitude: -5000.0
+load3 type: distributed start: 1 end: 2 startmagnitude: 0.0 endmagnitude: -100.0
+load4 type: distributed start: 2 end: 3 startmagnitude: -100.0 endmagnitude: -200.0
+load5 type: distributed start: 3 end: 4 startmagnitude: -200.0 endmagnitude: -300.0
+load6 type: distributed start: 4 end: 5 startmagnitude: -300.0 endmagnitude: -400.0
+load7 type: distributed start: 5 end: 6 startmagnitude: -400.0 endmagnitude: -500.0
+load8 type: distributed start: 6 end: 7 startmagnitude: -500.0 endmagnitude: -600.0
+load9 type: distributed start: 7 end: 8 startmagnitude: -600.0 endmagnitude: -700.0
+load10 type: distributed start: 8 end: 9 startmagnitude: -700.0 endmagnitude: -800.0
+load11 type: distributed start: 9 end: 10 startmagnitude: -800.0 endmagnitude: -900.0
+load12 type: distributed start: 10 end: 11 startmagnitude: -900.0 endmagnitude: -1000.0
+load13 type: distributed start: 11 end: 12 startmagnitude: -1000.0 endmagnitude: -1100.0
+load14 type: distributed start: 12 end: 13 startmagnitude: -1100.0 endmagnitude: -1200.0
+load15 type: distributed start: 13 end: 14 startmagnitude: -1200.0 endmagnitude: -1300.0
+load16 type: distributed start: 14 end: 15 startmagnitude: -1300.0 endmagnitude: -1400.0
+load17 type: distributed start: 15 end: 16 startmagnitude: -1400.0 endmagnitude: -1500.0
+load18 type: distributed start: 16 end: 17 startmagnitude: -1500.0 endmagnitude: -1600.0
+load19 type: distributed start: 17 end: 18 startmagnitude: -1600.0 endmagnitude: -1700.0
+load20 type: distributed start: 18 end: 19 startmagnitude: -1700.0 endmagnitude: -1800.0
+load21 type: distributed start: 19 end: 20 startmagnitude: -1800.0 endmagnitude: -1900.0
+load22 type: distributed start: 20 end: 21 startmagnitude: -1900.0 endmagnitude: -2000.0
+load23 type: distributed start: 21 end: 22 startmagnitude: -2000.0 endmagnitude: -2100.0
+load24 type: distributed start: 22 end: 23 startmagnitude: -2100.0 endmagnitude: -2200.0
+load25 type: distributed start: 23 end: 24 startmagnitude: -2200.0 endmagnitude: -2300.0
+load26 type: distributed start: 24 end: 25 startmagnitude: -2300.0 endmagnitude: -2400.0
+load27 type: distributed start: 25 end: 26 startmagnitude: -2400.0 endmagnitude: -2500.0
+load28 type: distributed start: 26 end: 27 startmagnitude: -2500.0 endmagnitude: -2600.0
+load29 type: distributed start: 27 end: 28 startmagnitude: -2600.0 endmagnitude: -2700.0
+load30 type: distributed start: 28 end: 29 startmagnitude: -2700.0 endmagnitude: -2800.0
+load31 type: distributed start: 29 end: 30 startmagnitude: -2800.0 endmagnitude: -2900.0
+load32 type: distributed start: 30 end: 31 startmagnitude: -2900.0 endmagnitude: -3000.0
+load33 type: distributed start: 31 end: 32 startmagnitude: -3000.0 endmagnitude: -3100.0
+load34 type: distributed start: 32 end: 33 startmagnitude: -3100.0 endmagnitude: -3200.0
+load35 type: distributed start: 33 end: 34 startmagnitude: -3200.0 endmagnitude: -3300.0
+load36 type: distributed start: 34 end: 35 startmagnitude: -3300.0 endmagnitude: -3400.0
+load37 type: distributed start: 35 end: 36 startmagnitude: -3400.0 endmagnitude: -3500.0
+load38 type: distributed start: 36 end: 37 startmagnitude: -3500.0 endmagnitude: -3600.0
+load39 type: distributed start: 37 end: 38 startmagnitude: -3600.0 endmagnitude: -3700.0
+load40 type: distributed start: 38 end: 39 startmagnitude: -3700.0 endmagnitude: -3800.0
+load41 type: distributed start: 39 end: 40 startmagnitude: -3800.0 endmagnitude: -3900.0
+load42 type: distributed start: 40 end: 41 startmagnitude: -3900.0 endmagnitude: -4000.0
+load43 type: distributed start: 41 end: 42 startmagnitude: -4000.0 endmagnitude: -4100.0
+load44 type: distributed start: 42 end: 43 startmagnitude: -4100.0 endmagnitude: -4200.0
+load45 type: distributed start: 43 end: 44 startmagnitude: -4200.0 endmagnitude: -4300.0
+load46 type: distributed start: 44 end: 45 startmagnitude: -4300.0 endmagnitude: -4400.0
+load47 type: distributed start: 45 end: 46 startmagnitude: -4400.0 endmagnitude: -4500.0
+load48 type: distributed start: 46 end: 47 startmagnitude: -4500.0 endmagnitude: -4600.0
+load49 type: distributed start: 47 end: 48 startmagnitude: -4600.0 endmagnitude: -4700.0
+load50 type: distributed start: 48 end: 49 startmagnitude: -4700.0 endmagnitude: -4800.0
+load51 type: distributed start: 49 end: 50 startmagnitude: -4800.0 endmagnitude: -4900.0
+load52 type: distributed start: 50 end: 51 startmagnitude: -4900.0 endmagnitude: -5000.0
