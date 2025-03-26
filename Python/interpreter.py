@@ -36,7 +36,7 @@ def calculate_values(beam, node_loc, node_x_disp, node_y_disp, node_rot):
     moment_fine = cs.derivative().derivative()(x_fine) * beam.E * beam.I
     
     
-    point_loads = beam.loads[beam.loads["type"]=="force"] 
+    point_loads = beam.loads[beam.loads["type"]=="vforce"] 
     supports = beam.boundary_conditions
 
     discontinuity_locations = np.array([])

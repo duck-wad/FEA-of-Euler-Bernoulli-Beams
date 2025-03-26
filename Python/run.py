@@ -24,9 +24,8 @@ beam.add_BC("pin", 8.0)
 # Point force loads can have an angle specified. Angle is measured positive clockwise direction 
 beam.add_load("distributed", startloc=0.0, startmag=0.0, endloc=5.0, endmag=-5000.0)
 beam.add_load("moment", startloc=5.0, startmag=3000.0)
-#beam.add_load("force", startloc=4.0, startmag=-5000.0)
-#beam.add_load("force", startloc=7.0, startmag=5000.0, angle=30.0)
-beam.add_load("force", startloc=7.0, startmag=-5000.0)
+beam.add_load("force", startloc=4.0, startmag=-5000.0)
+beam.add_load("force", startloc=7.0, startmag=5000.0, angle=45.0)
 
 
 
