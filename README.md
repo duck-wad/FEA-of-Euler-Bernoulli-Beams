@@ -1,6 +1,6 @@
 # FEA of Euler-Bernoulli Beams
 
-- This repository contains simple code to create a beam with boundary conditions and loads, and analyze the displacements and reactions using the Finite Element Method for Euler-Bernoulli beams.
+- This repository contains code to create a beam with boundary conditions and loads, and analyze the displacements and reactions using the Finite Element Method for Euler-Bernoulli beams.
 - This was made as a simple exercise to improve my coding skills and learn about the FEA process!
 - Python scripts are used to generate a text input file which is read by a C++ program to perform the FEA. Python code then reads the C++ output from a CSV and performs post-processing exercises like plotting deformations and making BMD/SFD.
 
@@ -16,7 +16,7 @@
 - The C++ program reads the "INPUT.txt" file generated from the Python script. 
 - The mesh is discretized according to the node and element input from the infile. Elemental stiffness matrices and force vectors are developed and assembled into the global stiffness matrix and global force vector.
 - The system of equations is solved using Gaussian Elimination.
-- Currently only the vertical translation and rotation of each node is calculated. In future iterations, I want to implement axial translation, angled beams, and frames.
+- Currently only works for horizontal beams. In the future I'd like to extend it to analyze angled beams and frames.
 
 ## Displaying the Output
 - The run.py script calls "interpreter.py" which runs the post-processing activities.
