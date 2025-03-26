@@ -7,7 +7,7 @@
 ## Generating the Input
 1. In the run.py script, create a beam with a specified length and material parameters.
 2. Add boundary conditions using the "add_BC" class method, and specifying a type (ex. clamp, pin) and a location on the beam.
-3. Apply loads using the "add_load" class method, specifying a type (ex. distributed, moment, force), location, and magnitude. For distributed loads, start and end location and magnitude is required.
+3. Apply loads using the "add_load" class method, specifying a type (ex. distributed, moment, force), location, and magnitude. For distributed loads, start and end location and magnitude is required. Force loads can optionally have an angle, which will create horizontal and vertical force components.
 4. Discretize the beam into elements using the "discretize" method. Input an approximate element length, and the program will discretize the beam into approximately those sizes depending on the location of the nodes defined in step 2 and 3.
 5. Run the "create_infile" method to generate the input file.
 6. Run the "run" method to call the C++ executable.
@@ -25,8 +25,10 @@
 - Results are exported to an output Excel file for further analysis if needed.
 
 ### Example Beam Deformed Shape
-![image](https://github.com/user-attachments/assets/b957def9-49e6-409b-9f32-395867026a22)
+![image](https://github.com/user-attachments/assets/f3ae11d6-7f2b-4a6e-8552-e3b69b4088dd)
+
 
 ### Example BMD/SFD
-![image](https://github.com/user-attachments/assets/4d529655-699a-4df0-81e1-fef2a3e0e520)
+![image](https://github.com/user-attachments/assets/1352ffe2-3f35-4b9e-a4c4-20117a947c83)
+
 
