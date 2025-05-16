@@ -44,6 +44,9 @@ def calculate_values(beam, node_loc, node_x_disp, node_y_disp, node_rot):
         discontinuity_locations = np.append(discontinuity_locations, i["startloc"])
     for i in supports:
         discontinuity_locations = np.append(discontinuity_locations, i["location"])
+    # add start and end of beam
+    discontinuity_locations = np.append(discontinuity_locations, 0.0)
+    discontinuity_locations = np.append(discontinuity_locations, beam.L)
 
     discontinuity_locations = np.sort(np.unique(discontinuity_locations))
 
@@ -293,6 +296,7 @@ def run_output(beam, scale=1):
     plot_BMD_SFD(x, moment, shear)
 
     #export_to_excel(x, y, theta, moment, shear)
-    
+    plt.savefig("PINN Convergence.pdf", format="pdf")
+
     plt.show()
     
