@@ -264,8 +264,8 @@ def plot_BMD_SFD(x_fine, moment_fine, shear_fine):
     plt.subplots_adjust(bottom=0.25, hspace=0.4)
 
 # export the finely discretized results to an excel
-def export_to_excel(x, y, theta, moment, shear):
-    filepath = "./Results.xlsx"
+def export_to_excel(x, y, theta, moment, shear, filename):
+    filepath = "./Results/" + str(filename) + ".xlsx"
 
     results = np.array([x, y, theta, moment, shear])
     results = np.transpose(results)
@@ -274,7 +274,7 @@ def export_to_excel(x, y, theta, moment, shear):
                                         "Moment (kNm)", "Shear (kN)"])
     df.to_excel(filepath)
     
-def run_output(beam, scale=1):
+def run_output(beam, scale=1, filename="Results", plot=True):
 
     # read output from FEA and put into numpy arrays
     results = pd.read_csv("../FEA Engine/Output/RESULTS.csv")
@@ -295,8 +295,7 @@ def run_output(beam, scale=1):
                        
     plot_BMD_SFD(x, moment, shear)
 
-    #export_to_excel(x, y, theta, moment, shear)
-    plt.savefig("PINN Convergence.pdf", format="pdf")
+    export_to_excel(x, y_disp, theta, moment, shear, filename)
 
-    plt.show()
+    if plot: plt.show()
     
