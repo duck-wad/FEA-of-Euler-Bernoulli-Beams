@@ -1,7 +1,6 @@
 # FEA of Euler-Bernoulli Beams
 
 - This repository contains code to create a beam with boundary conditions and loads, and analyze the displacements and reactions using the Finite Element Method for Euler-Bernoulli beams.
-- This was made as a simple exercise to improve my coding skills and learn about the FEA process!
 - Python scripts are used to generate a text input file which is read by a C++ program to perform the FEA. Python code then reads the C++ output from a CSV and performs post-processing exercises like plotting deformations and making BMD/SFD.
 
 ## Generating the Input
