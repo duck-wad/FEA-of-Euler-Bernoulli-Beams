@@ -15,7 +15,6 @@
 - The C++ program reads the "INPUT.txt" file generated from the Python script. 
 - The mesh is discretized according to the node and element input from the infile. Elemental stiffness matrices and force vectors are developed and assembled into the global stiffness matrix and global force vector.
 - The system of equations is solved using Gaussian Elimination.
-- Currently only works for horizontal beams. In the future I'd like to extend it to analyze angled beams and frames.
 
 ## Displaying the Output
 - The run.py script calls "interpreter.py" which runs the post-processing activities.
@@ -23,11 +22,8 @@
 - BMD and SFD are constructed as derivatives of a CubicHermiteSpline of the nodal displacement. 
 - Results are exported to an output Excel file for further analysis if needed.
 
-### Example Beam Deformed Shape
 ![image](https://github.com/user-attachments/assets/f3ae11d6-7f2b-4a6e-8552-e3b69b4088dd)
 
-
-### Example BMD/SFD
 ![image](https://github.com/user-attachments/assets/1352ffe2-3f35-4b9e-a4c4-20117a947c83)
 
 
